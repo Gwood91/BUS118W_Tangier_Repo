@@ -11,8 +11,7 @@ from app import app
 @app.route('/')
 @app.route('/index')
 def index():
-    user = {'username': 'Christian'}
-    return render_template('index.html', title='Home page', user=user)
+    return render_template('index.html', title='Home')
 
 
 @app.route('/login')
