@@ -1,7 +1,10 @@
-from flask import render_template
-
 import sys
-sys.path.append('/Users/gwood/Tangier')
+from flask import render_template
+import os
+# change the directory to current user
+current_user = user_root = os.path.expanduser('~')
+local_path = user_root + "/Tangier"
+sys.path.append(local_path)
 from app import app
 
 
