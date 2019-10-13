@@ -14,7 +14,21 @@ def index():
     return render_template('index.html', title='Home')
 
 
-@app.route('/login')
-def login():
-    return render_template('login.html', title='Sign In')
+@app.route('/profile')
+def profile():
+    return render_template('profile.html', title='Profile')
+
+@app.route('/message')
+def message():
+    return render_template('message.html', title='Direct Messaging')
+
+@app.route('/jobs')
+def jobs():
+    return render_template('jobs.html', title='Jobs')
+
+@app.route('/myNetwork')
+def myNetwork():
+    return render_template('myNetwork.html', title='Jobs')
+
+
 
