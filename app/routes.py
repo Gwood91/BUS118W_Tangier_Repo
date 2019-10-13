@@ -1,17 +1,14 @@
+# import modules
 import sys
 from flask import render_template
 import os
 # change the directory to current user
 current_user = user_root = os.path.expanduser('~')
-local_path = user_root + "/Tangier"
+local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
 sys.path.append(local_path)
 from app import app
 
-
-@app.route('/')
-@app.route('/index')
-def index():
-    return render_template('index.html', title='Home')
+# define the routes
 
 
 @app.route('/login')
