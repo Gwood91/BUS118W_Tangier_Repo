@@ -15,13 +15,16 @@ from app import app
 def profile():
     return render_template('profile.html', title='Profile')
 
+
 @app.route('/message')
 def message():
     return render_template('message.html', title='Direct Messaging')
 
+
 @app.route('/jobs')
 def jobs():
     return render_template('jobs.html', title='Jobs')
+
 
 @app.route('/myNetwork')
 def myNetwork():
