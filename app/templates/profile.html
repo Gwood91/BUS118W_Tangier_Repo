@@ -1,6 +1,27 @@
 
 {% extends "base.html" %}
 {% block content %}
-<img src="{{ user_image }}" alt="User Image">
-<p>This is the profile page</p>
+<div style="display:inline-flex">
+    <img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 250px; height: 250px;">
+    <h3 style="vertical-align: middle; margin-top: auto">User.First_Name User.Last_Name</h3>
+</div>
+<div style="display: block; border: 1px black solid">
+    <h3>About:</h3>
+    <textarea></textarea>
+    <h3>Experience:</h3>
+    <textarea></textarea>
+    <h3>Skills:</h3>
+    <textarea></textarea>
+</div>
+<hr>
+<div style="border: 1px black solid; display: block">
+    <h3>Network:</h3>
+        {% for i in range(i)%}
+        <div style="display:inline-flex; margin-right: 50px">
+            <div><img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 75px; height: 75px;">
+                <br>
+                <p style="text-align: center">Joe Blow</p></div>
+        </div>
+        {% endfor %} 
+</div>
 {% endblock %}

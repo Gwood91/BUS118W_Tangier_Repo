@@ -10,13 +10,16 @@ from app import app
 
 
 # define the routes
+
+
 @app.route('/home')
 def home():
     return render_template('home.html', title='Home')
 
+
 @app.route('/profile')
 def profile():
-    return render_template('profile.html', title='Profile')
+    return render_template('profile.html', title='Profile', i=5)
 
 
 @app.route('/message')
