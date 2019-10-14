@@ -8,6 +8,7 @@ local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
 sys.path.append(local_path)
 from app import app
 
+
 # define the routes
 @app.route('/home')
 def home():
