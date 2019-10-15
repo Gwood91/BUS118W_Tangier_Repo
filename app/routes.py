@@ -60,3 +60,12 @@ def recruiter_page():
         #current_cand_analysis = "Candidate Match: " + str(candidate_match) + "%\n" + "Summary Match: " + str(summary_match) + "%"
         return render_template('recruiter_page.html', title='Recruiter', candidate_analysis=current_cand_analysis, i=5)
 
+@app.route('/candidate_search', methods=['GET', 'POST'])
+def candidate_search():
+    if request.method == 'GET':
+        return render_template('recruiter_candidate_search.html', title='Candidate Search', i=5)
+    # if the recruiter client is evaluating the potential match of a candidate
+    if request.method == 'POST':
+        # get the data supplied by the client and construct sanitzed queries in the db
+        candidate_text = str(request.form.get("candidateText", None))
+        search_criteria = str(request.form.get("searchCriteria", None))
