@@ -4,7 +4,7 @@ from flask import Flask, g, render_template, redirect, url_for, session, request
 import os
 # these two modules are for the candidate checker
 # install this mkl for gensim error
-from gensim.summarization.summarizer import summarize
+#from gensim.summarization.summarizer import summarize
 from fuzzywuzzy.fuzz import ratio
 
 # change the directory to current user
@@ -53,9 +53,10 @@ def recruiter_page():
         candidate_text = str(request.form.get("candidateText", None))
         search_criteria = str(request.form.get("searchCriteria", None))
         # analysing the natural language of the profile text
-        candidate_summary = summarize(candidate_text)
+        #candidate_summary = summarize(candidate_text)
         candidate_match = ratio(candidate_text, search_criteria)
-        summary_match = ratio(candidate_summary, search_criteria)
-        current_cand_analysis = "Candidate Match: " + str(candidate_match) + "%\n" + "Summary Match: " + str(summary_match) + "%"
+        #summary_match = ratio(candidate_summary, search_criteria)
+        current_cand_analysis = "Candidate Match: " + str(candidate_match)
+        #current_cand_analysis = "Candidate Match: " + str(candidate_match) + "%\n" + "Summary Match: " + str(summary_match) + "%"
         return render_template('recruiter_page.html', title='Recruiter', candidate_analysis=current_cand_analysis, i=5)
 
