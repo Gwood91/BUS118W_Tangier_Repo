@@ -3,6 +3,7 @@ import sys
 from flask import Flask, g, render_template, redirect, url_for, session, request, flash
 import os
 # these two modules are for the candidate checker
+# install this mkl for gensim error
 from gensim.summarization.summarizer import summarize
 from fuzzywuzzy.fuzz import ratio
 
