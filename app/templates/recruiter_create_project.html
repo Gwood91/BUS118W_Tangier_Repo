@@ -1,0 +1,23 @@
+
+{% extends "base.html" %}
+{% block content %}
+
+<div>
+    <h2>New Project</h2>    
+        <div style="width: 700px; height: 250px; background: rgb(226, 226, 226); border: solid black 1px;">
+            <h3>Description:</h3>
+            <div>
+                <form method="POST" > 
+                    Project Title:<input id ="projectTitle" name = "projectTitle" type="search">
+                    <br>
+                    Project Drescription:<textarea id ="projectDescription" name = "projectDescription"></textarea> 
+                    <input type="submit" value="Search">
+                </form>
+                <div style="display: inline-flex">
+                    <a href="/recruiter" style="float:right"><button>Return to Recruiter View</button></a>
+                </div>
+            </div>
+        </div>
+       
+</div>
+{% endblock %}
