@@ -37,7 +37,7 @@ def profile():
     return render_template('profile.html', title='Profile', i=5)
 
 
-@app.route('/message')
+@app.route('/message', methods=['GET', 'POST'])
 def message():
     return render_template('message.html', title='Direct Messaging')
 
