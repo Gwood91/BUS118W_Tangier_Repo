@@ -53,7 +53,7 @@ app.config["SECRET_KEY"] = "kadsddhakDabjdshdsadabjkdhjkh2jh3jk395llabife395wlan
 app.config["OIDC_ID_TOKEN_COOKIE_NAME"] = "Tangier_Token"
 oidc = OpenIDConnect(app)
 # argument includes Elliott's okta dev url and the Tangier Token
-okta_client = UsersClient("https://dev-111947.okta.com", "000zLjpp0BsHcC2LvmtUb5EL1H_rxHqWLNhfJ4ImCs")
+okta_client = UsersClient("https://dev-126675.okta.com", "00VIozFldsnyd9oqlb4ferZD507ekhVDvj3hOSxvCJ")
 
 # define the routes
 
