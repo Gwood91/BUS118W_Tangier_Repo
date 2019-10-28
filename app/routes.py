@@ -86,7 +86,10 @@ def jobs():
 
 @app.route('/myNetwork')
 def my_network():
-    return render_template('myNetwork.html', title='myNetwork')
+    # the query group returned resulting from the user search
+    """temporary variable condition"""
+    query_listing = 5
+    return render_template('myNetwork.html', title='myNetwork', query_listing=query_listing)
 
 
 # for recruitment clients
