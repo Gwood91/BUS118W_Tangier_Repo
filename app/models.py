@@ -1,4 +1,5 @@
 # User database model/schema 
+import base64
 import os
 from datetime import datetime
 from app import db

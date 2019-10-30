@@ -1,15 +1,13 @@
 import os 
-
+from dotenv import load_dotenv
 
 # define the path for the current user
-current_user = user_root = os.path.expanduser('~')
-local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
-# change the directory to the venv on the machine of the current user
-os.chdir(local_path)
+
 
 # Flask-SQLAlchemy configuration 
 # database location variable
 basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))
 
 
 # Configuring the database 
