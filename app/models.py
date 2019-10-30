@@ -1,13 +1,14 @@
 # User database model/schema 
 import os
-
+from datetime import datetime
+from app import db
+# from sqlalchemy import db
 # define the path for the current user
 current_user = user_root = os.path.expanduser('~')
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
 # change the directory to the venv on the machine of the current user
 os.chdir(local_path)
-from datetime import datetime
-from app import db
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -17,6 +18,8 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
+
+
 # The Post class are blog posts written by Users 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
