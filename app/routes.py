@@ -1,6 +1,7 @@
 # import sys modules
 import sys
 import os
+import base64
 # define the path for the current user
 current_user = user_root = os.path.expanduser('~')
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
@@ -19,7 +20,8 @@ import oidc
 from flask_oidc import OpenIDConnect
 from okta import UsersClient
 from oauth2client.client import OAuth2Credentials
-
+from matplotlib import pyplot as plt
+from io import StringIO
 """THE FOLLOWING CODE IS DEPRECATED"""
 # change the directory to current user
 #current_user = user_root = os.path.expanduser('~')
@@ -96,7 +98,20 @@ def my_network():
 @app.route('/recruiter', methods=['GET', 'POST'])
 def recruiter_page():
     if request.method == 'GET':
-        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15)
+        """HERE IS A SOMEWHAT PRIMATIVE METHO OF GENERATING DASHBOARD VISUALS"""  # TODO: REFINE
+        x = [1, 5, 6, 8, 9]  # sample x values, these will be derived from some query into the db
+        y = [12, 16, 11, 17, 22]  # sample y values, these will be derived from some query into the db
+        plt.style.use('dark_background')  # change the color theme
+        fig, ax = plt.subplots()
+        ax.set_title("Recruiter Activity")  # set the axis title
+        ax.plot(x, y)  # create the plot
+        ax.grid("on")
+        img = plt.savefig("plt_img", format='png')  # save the plot as base64 string
+        with open("plt_img", "rb") as img_file:
+            raw_base64 = str(base64.b64encode(img_file.read()))
+            plt_a_base64 = "src=" + "data:image/png;base64,{}"
+            plt_a_base64 = plt_a_base64.format(raw_base64[2:-1])  # format the base 64 string for html rendering
+        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64)
     # if the recruiter client is evaluating the potential match of a candidate
     if request.method == 'POST':
         # get the input element with a given name from the posted from
