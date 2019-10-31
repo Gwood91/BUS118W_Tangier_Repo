@@ -17,11 +17,9 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.config['SQLALCHEMY_DATABASE_URI'] = local_engine_path
 
-# Flask-SQLAlchemy initialization
 # db object represents the database
 db = SQLAlchemy(app)
 
-# For migration purposes if needed
 # change the directory to current user
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
 sys.path.append(local_path)

@@ -9,6 +9,7 @@ local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
 # change the directory to the venv on the machine of the current user
 os.chdir(local_path)
 from __init__ import db, app
+from app import db
 
 
 def init_db():
@@ -26,6 +27,11 @@ class User(db.Model):
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
+# Getting users from the database
+users = User.query.all()
+for u in users:
+    print(u.username)
+
 
 # The Post class are blog posts written by Users
 class Post(db.Model):
@@ -40,5 +46,21 @@ class Post(db.Model):
     def __repr__(self):
         return '<Post {}>'.format(self.body)
 
+# Getting posts from the database
+posts = Post.query.all()
+for p in posts:
+    print(p.body)
 
-init_db()
+
+# Work in progress... need to get to add to database***
+class Message(db.Model):
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    body = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+    def __repr__(self):
+        return '<Message {}>'.format(self.body)
+
