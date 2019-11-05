@@ -72,7 +72,7 @@ class Message(db.Model):
 # create an association table for talent pools and projects
 talent_pool_table = db.Table('talent_pool',
                              db.Column('project_id', db.Integer, db.ForeignKey('recruiter__project.id')),  # use double underscore if needed
-                             db.Column('user_id', db.Integer, db.ForeignKey('User.id')),
+                             db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
                              extend_existing=True
                              )
 
@@ -90,8 +90,8 @@ class Recruiter_Project(db.Model):
     # determine if a given user is included within the talent pool
 
     def is_talent(self, user):
-        return self.followed.filter(
-            followers.c.followed_id == user.email).count() > 0
+        return self.talent_pool.filter(
+            talent_pool_table.c.user_id == user.id).count() > 0
 
     def add_talent(self, user):
         # validate logic and connect users
@@ -104,3 +104,4 @@ class Recruiter_Project(db.Model):
             self.talent_pool.remove(user)
 
 
+init_db()
