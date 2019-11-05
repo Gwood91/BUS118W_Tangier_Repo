@@ -5,10 +5,10 @@ from datetime import datetime
 # from sqlalchemy import db
 # define the path for the current user
 current_user = user_root = os.path.expanduser('~')
-local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/app/"
+local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/app"
 # change the directory to the venv on the machine of the current user
 os.chdir(local_path)
-from app import db, app
+from __init__ import db, app
 
 
 def init_db():
@@ -25,6 +25,7 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
+
 
 # Getting users from the database
 users = User.query.all()
@@ -44,6 +45,7 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
+
 
 # Getting posts from the database
 posts = Post.query.all()
