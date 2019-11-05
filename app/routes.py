@@ -14,7 +14,7 @@ from flask import Flask, g, render_template, redirect, url_for, session, request
 # install this mkl for gensim error
 #from gensim.summarization.summarizer import summarize
 from fuzzywuzzy.fuzz import ratio
-from app import app
+from __init__ import app
 # modules for okta authentication
 import oidc
 from flask_oidc import OpenIDConnect
@@ -80,7 +80,6 @@ def profile():
 @app.route('/messagePage', methods=['GET', 'POST'])
 def messagePage():
     return render_template('message.html', title='Direct Messaging')
-    
 
 
 @app.route('/jobs')

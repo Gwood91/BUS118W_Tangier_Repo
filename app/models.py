@@ -8,7 +8,7 @@ current_user = user_root = os.path.expanduser('~')
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/app"
 # change the directory to the venv on the machine of the current user
 os.chdir(local_path)
-from app import db, app
+from __init__ import db, app
 
 
 def init_db():
