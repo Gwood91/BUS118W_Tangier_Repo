@@ -68,12 +68,12 @@ class Message(db.Model):
         return '<Message {}>'.format(self.body)
 
 
-# association table for recrutier project and search candidate
-talent_pool_table = db.Table('talent_pool_table', Base.metadata,
-                             db.Column('user_id', db.Integer, db.ForeignKey("User.id"),
-                                       primary_key=True),
-                             db.Column('project_id', db.Integer, db.ForeignKey("Recruiter_Project.id"),
-                                       primary_key=True)
+
+# create an association table for talent pools and projects
+talent_pool_table = db.Table('talent_pool',
+                             db.Column('project_id', db.Integer, db.ForeignKey('recruiter__project.id')),  # use double underscore if needed
+                             db.Column('user_id', db.Integer, db.ForeignKey('User.id')),
+                             extend_existing=True
                              )
 
 
@@ -82,10 +82,25 @@ class Recruiter_Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     description = db.Column(db.String(256))
-    # talent_pool = db.relationship(
-        # "Recruiter_Project", secondary=talent_pool_table,
-        #primaryjoin=(talent_pool_table.c.project_id == id),
-        #secondaryjoin=(recruiter_project.c.project_id == id),
-        # backref=db.backref("Recruiter_Project", lazy='dynamic'), lazy='dynamic')
+    talent_pool = db.relationship(
+        "Recruiter_Project", secondary=talent_pool_table,
+        primaryjoin=(talent_pool_table.c.project_id == id),
+        secondaryjoin=(talent_pool_table.c.project_id == id),
+        backref=db.backref("talent_pool_table", lazy='dynamic'), lazy='dynamic')
+    # determine if a given user is included within the talent pool
+
+    def is_talent(self, user):
+        return self.followed.filter(
+            followers.c.followed_id == user.email).count() > 0
+
+    def add_talent(self, user):
+        # validate logic and connect users
+        if self.is_talent(user) == False:  # if user not already in talent pool
+            self.talent_pool.append(user)
+
+    def remove_talent(self, user):
+        # validate logic and connect users
+        if self.is_talent(user) == False:  # if user not already in talent pool
+            self.talent_pool.remove(user)
 
 
