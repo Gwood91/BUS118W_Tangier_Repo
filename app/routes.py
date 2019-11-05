@@ -4,7 +4,7 @@ import os
 import base64
 # define the path for the current user
 current_user = user_root = os.path.expanduser('~')
-local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
+local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/app/"
 # change the directory to the venv on the machine of the current user
 os.chdir(local_path)
 print(os.getcwd())
@@ -14,7 +14,6 @@ from flask import Flask, g, render_template, redirect, url_for, session, request
 # install this mkl for gensim error
 #from gensim.summarization.summarizer import summarize
 from fuzzywuzzy.fuzz import ratio
-from __init__ import app
 # modules for okta authentication
 import oidc
 from flask_oidc import OpenIDConnect
@@ -22,13 +21,11 @@ from okta import UsersClient
 from oauth2client.client import OAuth2Credentials
 from matplotlib import pyplot as plt
 from io import StringIO
-"""THE FOLLOWING CODE IS DEPRECATED"""
 # change the directory to current user
-#current_user = user_root = os.path.expanduser('~')
-#local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
-# sys.path.append(local_path)
-#from app import app
-"""END DEPRECATION"""
+current_user = user_root = os.path.expanduser('~')
+local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
+sys.path.append(local_path)
+from app import app
 # preload request
 
 
