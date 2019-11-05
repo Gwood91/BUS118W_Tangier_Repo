@@ -2,6 +2,8 @@
 import base64
 import os
 from datetime import datetime
+from sqlalchemy.ext.declarative import declarative_base
+Base = declarative_base()
 # from sqlalchemy import db
 # define the path for the current user
 current_user = user_root = os.path.expanduser('~')
@@ -64,4 +66,26 @@ class Message(db.Model):
 
     def __repr__(self):
         return '<Message {}>'.format(self.body)
+
+
+# association table for recrutier project and search candidate
+talent_pool_table = db.Table('talent_pool_table', Base.metadata,
+                             db.Column('user_id', db.Integer, db.ForeignKey("User.id"),
+                                       primary_key=True),
+                             db.Column('project_id', db.Integer, db.ForeignKey("Recruiter_Project.id"),
+                                       primary_key=True)
+                             )
+
+
+class Recruiter_Project(db.Model):
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    description = db.Column(db.String(256))
+    # talent_pool = db.relationship(
+        # "Recruiter_Project", secondary=talent_pool_table,
+        #primaryjoin=(talent_pool_table.c.project_id == id),
+        #secondaryjoin=(recruiter_project.c.project_id == id),
+        # backref=db.backref("Recruiter_Project", lazy='dynamic'), lazy='dynamic')
+
 

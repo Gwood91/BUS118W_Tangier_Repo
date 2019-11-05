@@ -26,7 +26,8 @@ db = SQLAlchemy(app)
 
 
 # models module defines the structure of the database
-from app import routes, models
+import routes
+import models
 if __name__ == "__main__":
     app.debug = True
     app.run(port=5000)
