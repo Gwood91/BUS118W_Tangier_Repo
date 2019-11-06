@@ -78,7 +78,7 @@ def profile():
 
 @app.route('/messagePage', methods=['GET', 'POST'])
 def messagePage():
-    return render_template('message.html', title='Direct Messaging')
+    return render_template('messagePage.html', title='Direct Messaging')
 
 
 @app.route('/jobs')
