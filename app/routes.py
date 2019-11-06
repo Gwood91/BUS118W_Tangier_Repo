@@ -19,7 +19,9 @@ import oidc
 from flask_oidc import OpenIDConnect
 from okta import UsersClient
 from oauth2client.client import OAuth2Credentials
-from matplotlib import pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 from io import StringIO
 # change the directory to current user
 current_user = user_root = os.path.expanduser('~')

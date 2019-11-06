@@ -24,6 +24,7 @@ class User(db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    # db relationships for users with recruiter privelages and their projects
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -72,7 +73,7 @@ class Message(db.Model):
 # create an association table for talent pools and projects
 talent_pool_table = db.Table('talent_pool',
                              db.Column('project_id', db.Integer, db.ForeignKey('recruiter__project.id')),  # use double underscore if needed
-                             db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+                             db.Column('user_id', db.Integer, db.ForeignKey('ser.id')),
                              extend_existing=True
                              )
 
@@ -102,6 +103,14 @@ class Recruiter_Project(db.Model):
         # validate logic and connect users
         if self.is_talent(user) == False:  # if user not already in talent pool
             self.talent_pool.remove(user)
+
+    def create(self):
+        # remove self from recruiter projects table
+        db.session.add(self)
+
+    def delete(self):
+        # remove self from recruiter projects table
+        db.session.remove(self)
 
 
 init_db()
