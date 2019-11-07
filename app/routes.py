@@ -27,20 +27,8 @@ from io import StringIO
 current_user = user_root = os.path.expanduser('~')
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
 sys.path.append(local_path)
-from app import app
-# preload request
-
-
-# @app.before_request
-# def before_request():
-    # """ Load a proper user object using the user ID from the ID token. This way, the
-     # `g.user` object can be used at any point"""
-    # if oidc.user_loggedin:
-        #g.user = okta_client.get_user(oidc.user_getfield("sub"))
-        #user = db.session.query(User_Profile).filter_by(email=g.user.profile.email).first_or_404()
-        #user_client = user
-    # else:
-        #g.user = None
+from app import app, db
+from models import User, User_Profile, Recruiter_Project, Message, Post
 
 
 # note: the return variable cannot have the same name as the function that is returning it
@@ -56,7 +44,19 @@ oidc = OpenIDConnect(app)
 # argument includes Elliott's okta dev url and the Tangier Token
 okta_client = UsersClient("https://dev-126675.okta.com", "00VIozFldsnyd9oqlb4ferZD507ekhVDvj3hOSxvCJ")
 
+# preload request
 
+
+@app.before_request
+def before_request():
+    """ Load a proper user object using the user ID from the ID token. This way, the
+     `g.user` object can be used at any point"""
+    if oidc.user_loggedin:
+        g.user = okta_client.get_user(oidc.user_getfield("sub"))
+        user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+        user_client = user
+    else:
+        g.user = None
 # define the routes
 
 

@@ -55,8 +55,8 @@ class Message(db.Model):
 
 # create an association table for talent pools and projects
 talent_pool_table = db.Table('talent_pool',
-                             db.Column('project_id', db.Integer, db.ForeignKey('Recruiter_Project.id')),  # use double underscore if needed
-                             db.Column('user_id', db.Integer, db.ForeignKey('User.id')),
+                             db.Column('project_id', db.Integer, db.ForeignKey('recruiter_project.id')),  # use double underscore if needed
+                             db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
                              extend_existing=True
                              )
 
@@ -66,6 +66,7 @@ class Recruiter_Project(db.Model):
     __abstract__ = True
     id = db.Column(db.Integer, primary_key=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    title = db.Column(db.String(96))
     description = db.Column(db.String(256))
     talent_pool = db.relationship(
         "Recruiter_Project", secondary=talent_pool_table,
@@ -100,15 +101,22 @@ class Recruiter_Project(db.Model):
 """TO DO: RELATIONSHIP DOES NOT WORK"""
 
 
-# class User_Profile(db.Model):
-    ## __tablename__ = "user_profile"
-    #__table_args__ = {'extend_existing': True}
-    #id = db.Column(db.String(120), index=True, unique=True, primary_key=True)
-    #user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+class User_Profile(db.Model):
+    # __tablename__ = "user_profile"
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.String(120), index=True, unique=True, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     #user = relationship("User", back_populates="user_profile")
-    #profile_body = db.Column(db.String(256))
-    #profile_skills = db.Column(db.String(256))
-    #profile_experience = db.Column(db.String(256))
+    user_bio = db.Column(db.String(256))
+    skills = db.Column(db.String(256))
+    experience = db.Column(db.String(256))
+
+
+# user_recruiter_project_table = db.Table('user_recruiter_project',
+                                        # db.Column('project_id', db.Integer, db.ForeignKey('Recruiter_Project.id')),  # use double underscore if needed
+                                        #db.Column('owner_id', db.Integer, db.ForeignKey('user.id')),
+                                        # extend_existing=True
+                                        # )
 
 
 class User(db.Model):
@@ -121,8 +129,11 @@ class User(db.Model):
     #user_profile = relationship("User_Profile", uselist=False, back_populates="user")
     # db relationships for users with recruiter privelages and their projects
     """TO DO: RELATIONSHIP DOES NOT WORK"""
-    # recruiting_projects = db.relationship('Recruiter__Project', primaryjoin="User.id==Recruiter__Project.owner_id",
-                                          # backref='u', lazy='dynamic')
+    # recruiter_project = db.relationship(
+        # "User", secondary=user_recruiter_project_table,
+        #primaryjoin=(user_recruiter_project_table.c.owner_id == id),
+        #secondaryjoin=(user_recruiter_project_table.c.owner_id == id),
+        # backref=db.backref("user_recruiter_project", lazy='dynamic'), lazy='dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
