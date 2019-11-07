@@ -111,6 +111,7 @@ def recruiter_page():
             raw_base64 = str(base64.b64encode(img_file.read()))
             plt_a_base64 = "src=" + "data:image/png;base64,{}"
             plt_a_base64 = plt_a_base64.format(raw_base64[2:-1])  # format the base 64 string for html rendering
+        """TODO: USE PLOTLY FOR THE GAUGE CHART/RADIAL GAUGE"""
         return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64)
     # if the recruiter client is evaluating the potential match of a candidate
     if request.method == 'POST':

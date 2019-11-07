@@ -3,6 +3,7 @@ import base64
 import os
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 Base = declarative_base()
 # from sqlalchemy import db
 # define the path for the current user
@@ -16,24 +17,6 @@ from __init__ import db, app
 def init_db():
     with app.app_context():
         db.create_all()
-
-
-class User(db.Model):
-    __table_args__ = {'extend_existing': True}
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
-    password_hash = db.Column(db.String(128))
-    # db relationships for users with recruiter privelages and their projects
-
-    def __repr__(self):
-        return '<User {}>'.format(self.username)
-
-
-# Getting users from the database
-users = User.query.all()
-for u in users:
-    print(u.username)
 
 
 # The Post class are blog posts written by Users
@@ -72,14 +55,15 @@ class Message(db.Model):
 
 # create an association table for talent pools and projects
 talent_pool_table = db.Table('talent_pool',
-                             db.Column('project_id', db.Integer, db.ForeignKey('recruiter__project.id')),  # use double underscore if needed
-                             db.Column('user_id', db.Integer, db.ForeignKey('ser.id')),
+                             db.Column('project_id', db.Integer, db.ForeignKey('Recruiter_Project.id')),  # use double underscore if needed
+                             db.Column('user_id', db.Integer, db.ForeignKey('User.id')),
                              extend_existing=True
                              )
 
 
 class Recruiter_Project(db.Model):
     __table_args__ = {'extend_existing': True}
+    __abstract__ = True
     id = db.Column(db.Integer, primary_key=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     description = db.Column(db.String(256))
@@ -113,4 +97,42 @@ class Recruiter_Project(db.Model):
         db.session.remove(self)
 
 
+"""TO DO: RELATIONSHIP DOES NOT WORK"""
+
+
+# class User_Profile(db.Model):
+    ## __tablename__ = "user_profile"
+    #__table_args__ = {'extend_existing': True}
+    #id = db.Column(db.String(120), index=True, unique=True, primary_key=True)
+    #user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    #user = relationship("User", back_populates="user_profile")
+    #profile_body = db.Column(db.String(256))
+    #profile_skills = db.Column(db.String(256))
+    #profile_experience = db.Column(db.String(256))
+
+
+class User(db.Model):
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), index=True, unique=True)
+    email = db.Column(db.String(120), index=True, unique=True)
+    password_hash = db.Column(db.String(128))
+    """TO DO: RELATIONSHIP DOES NOT WORK"""
+    #user_profile = relationship("User_Profile", uselist=False, back_populates="user")
+    # db relationships for users with recruiter privelages and their projects
+    """TO DO: RELATIONSHIP DOES NOT WORK"""
+    # recruiting_projects = db.relationship('Recruiter__Project', primaryjoin="User.id==Recruiter__Project.owner_id",
+                                          # backref='u', lazy='dynamic')
+
+    def __repr__(self):
+        return '<User {}>'.format(self.username)
+
+
+
+# initialize the database
 init_db()
+# Getting users from the database
+user_query = User.query.all()
+for u in user_query:
+    print(u.username)
+
