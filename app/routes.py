@@ -23,6 +23,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from io import StringIO
+"""TODO: Probably gonna need to change the double directory change here, need to consolidate"""
 # change the directory to current user
 current_user = user_root = os.path.expanduser('~')
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
@@ -54,7 +55,14 @@ def before_request():
     if oidc.user_loggedin:
         g.user = okta_client.get_user(oidc.user_getfield("sub"))
         user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+        # handle newly registered users who are not in our db
+        if user == None:
+            new_user = User(username=g.user.profile.email, email=g.user.profile.email)
+            # append user to db
+            db.session.add(new_user)
+            db.session.commit()
         user_client = user
+
     else:
         g.user = None
 # define the routes
@@ -147,4 +155,8 @@ def create_project():
         # get the data supplied by the client and construct sanitzed queries in the db
         project_title = str(request.form.get("projectTitle", None))
         project_description = str(request.form.get("projectDescription", None))
-        return str(project_title + project_description + """<a href=" / recruiter" style="float: right"><button>Return to Recruiter View</button></a>""")
+        user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+        new_project = Recruiter_Project(owner_id=user.id, description=project_description, title=project_title)
+        db.session.add(new_project)
+        db.session.commit()
+        return url_for(recruiter_page)
