@@ -7,10 +7,10 @@
         <div>
             <p style="margin-top: 10px">Projects</p>
             <div style="display: inline-block; border: black 1px solid; width: 240px; height: 65%; background: rgb(236, 236, 236); padding-right: auto; padding-left: auto; overflow:auto; direction: ltr;">
-                    {% for i in range(i)%}
-                        <p>Project XYZ</p>
-                        <button>View/Edit</button>
-                        <button>Remove</button>
+                    {% for project in projects%}
+                        <p>{{ project.title }}</p>
+                        <a href="{{ url_for('view_project', project_id=project.id) }}"><button>View/Edit</button></a>
+                        <a href="{{ url_for('remove_project', project_id=project.id) }}"><button>Remove</button></a>
                         <hr>
                     {% endfor %} 
             </div>

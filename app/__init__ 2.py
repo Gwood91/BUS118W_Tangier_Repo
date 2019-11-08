@@ -5,7 +5,6 @@ from flask import Flask
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
-from flask_migrate import Migrate
 # define the local path
 current_user = os.path.expanduser('~')
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
@@ -20,8 +19,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = local_engine_path
 
 # db object represents the database
 db = SQLAlchemy(app)
-# create the migration obect
-migrate = Migrate(app, db)
 
 # # change the directory to current user
 # local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
@@ -30,7 +27,7 @@ migrate = Migrate(app, db)
 
 # models module defines the structure of the database
 import routes
-import models
+#import models
 if __name__ == "__main__":
     app.debug = True
     app.run(port=5000)

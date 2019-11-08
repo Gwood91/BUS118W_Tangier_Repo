@@ -57,7 +57,7 @@ def before_request():
         user = db.session.query(User).filter_by(email=g.user.profile.email).first()
         # handle newly registered users who are not in our db
         if user == None:
-            new_user = User(username=g.user.profile.email, email=g.user.profile.email)
+            new_user = User(first_name=g.user.profile.firstName, last_name=g.user.profile.lastName, username=g.user.profile.email, email=g.user.profile.email)
             # append user to db
             db.session.add(new_user)
             db.session.commit()
@@ -80,6 +80,7 @@ def login_handler():
 
 
 @app.route('/profile')
+@oidc.require_login
 def profile():
     return render_template('profile.html', title='Profile', i=5)
 
@@ -95,6 +96,7 @@ def jobs():
 
 
 @app.route('/myNetwork')
+@oidc.require_login
 def my_network():
     # the query group returned resulting from the user search
     """temporary variable condition"""
@@ -104,9 +106,12 @@ def my_network():
 
 # for recruitment clients
 @app.route('/recruiter', methods=['GET', 'POST'])
+@oidc.require_login
 def recruiter_page():
+    current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+    user_projects = db.session.query(Recruiter_Project).filter_by(user_id=current_user.id)
     if request.method == 'GET':
-        """HERE IS A SOMEWHAT PRIMATIVE METHO OF GENERATING DASHBOARD VISUALS"""  # TODO: REFINE
+        """HERE IS A SOMEWHAT PRIMATIVE METHOD OF GENERATING DASHBOARD VISUALS"""  # TODO: REFINE
         x = [1, 5, 6, 8, 9]  # sample x values, these will be derived from some query into the db
         y = [12, 16, 11, 17, 22]  # sample y values, these will be derived from some query into the db
         plt.style.use('dark_background')  # change the color theme
@@ -120,7 +125,7 @@ def recruiter_page():
             plt_a_base64 = "src=" + "data:image/png;base64,{}"
             plt_a_base64 = plt_a_base64.format(raw_base64[2:-1])  # format the base 64 string for html rendering
         """TODO: USE PLOTLY FOR THE GAUGE CHART/RADIAL GAUGE"""
-        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64)
+        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64, projects=user_projects)
     # if the recruiter client is evaluating the potential match of a candidate
     if request.method == 'POST':
         # get the input element with a given name from the posted from
@@ -135,7 +140,39 @@ def recruiter_page():
         return render_template('recruiter_page.html', title='Recruiter', candidate_analysis=current_cand_analysis, i=5)
 
 
+@app.route('/recruiter/view/<project_id>', methods=['GET', 'POST'])  # view/edit a given project
+@oidc.require_login
+def view_project(project_id):
+    project = db.session.query(Recruiter_Project).filter_by(id=project_id).first_or_404()
+    candidate_pool = 15  # TODO: SET UP RELATIONSHIP WHEREBY EXISTS AN ASSOCIATION BETWEEN PROEJECTS AND USERS IN THE TALENT POOL
+    if request.method == 'GET':
+        return render_template('recruiter_view_edit_project.html', title=project.title, project=project, candidate_pool=candidate_pool)
+    if request.method == 'POST':
+        # get the data supplied by the client and construct sanitzed queries in the db
+        project_title = str(request.form.get("projectTitle", None))
+        project_description = str(request.form.get("projectDescription", None))
+        # edit the db fields for the project to reflect saved user changes
+        project.title = project_title
+        project.description = project_description
+        # update the the db session to save the above changes
+        db.session.commit()
+        return render_template('recruiter_view_edit_project.html', title=project.title, project=project, candidate_pool=candidate_pool)
+
+
+# if user decides to remove project
+
+
+@app.route('/recruiter/remove/<project_id>')
+@oidc.require_login
+def remove_project(project_id):
+    project = db.session.query(Recruiter_Project).filter_by(id=project_id).first_or_404()
+    db.session.delete(project)
+    db.session.commit()
+    return redirect(url_for('recruiter_page'))
+
+
 @app.route('/candidate_search', methods=['GET', 'POST'])
+@oidc.require_login
 def candidate_search():
     if request.method == 'GET':
         return render_template('recruiter_candidate_search.html', title='Candidate Search', i=5)
@@ -147,6 +184,7 @@ def candidate_search():
 
 
 @app.route('/newProject', methods=['GET', 'POST'])
+@oidc.require_login
 def create_project():
     if request.method == 'GET':
         return render_template('recruiter_create_project.html', title='Create Project', i=5)
@@ -156,7 +194,7 @@ def create_project():
         project_title = str(request.form.get("projectTitle", None))
         project_description = str(request.form.get("projectDescription", None))
         user = db.session.query(User).filter_by(email=g.user.profile.email).first()
-        new_project = Recruiter_Project(owner_id=user.id, description=project_description, title=project_title)
+        new_project = Recruiter_Project(user_id=user.id, description=project_description, title=project_title)
         db.session.add(new_project)
         db.session.commit()
-        return url_for(recruiter_page)
+        return redirect(url_for('recruiter_page'))

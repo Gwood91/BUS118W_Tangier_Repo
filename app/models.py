@@ -33,12 +33,6 @@ class Post(db.Model):
         return '<Post {}>'.format(self.body)
 
 
-# Getting posts from the database
-posts = Post.query.all()
-for p in posts:
-    print(p.body)
-
-
 # Work in progress... need to get to add to database***
 class Message(db.Model):
     __table_args__ = {'extend_existing': True}
@@ -52,10 +46,9 @@ class Message(db.Model):
         return '<Message {}>'.format(self.body)
 
 
-
 # create an association table for talent pools and projects
 talent_pool_table = db.Table('talent_pool',
-                             db.Column('project_id', db.Integer, db.ForeignKey('recruiter_project.id')),  # use double underscore if needed
+                             db.Column('project_id', db.Integer, db.ForeignKey('recruiter__project.id')),  # use double underscore if needed
                              db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
                              extend_existing=True
                              )
@@ -63,16 +56,15 @@ talent_pool_table = db.Table('talent_pool',
 
 class Recruiter_Project(db.Model):
     __table_args__ = {'extend_existing': True}
-    __abstract__ = True
     id = db.Column(db.Integer, primary_key=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     title = db.Column(db.String(96))
     description = db.Column(db.String(256))
-    talent_pool = db.relationship(
-        "Recruiter_Project", secondary=talent_pool_table,
-        primaryjoin=(talent_pool_table.c.project_id == id),
-        secondaryjoin=(talent_pool_table.c.project_id == id),
-        backref=db.backref("talent_pool_table", lazy='dynamic'), lazy='dynamic')
+    # talent_pool = db.relationship(
+        # "recruiter_project", secondary=talent_pool_table,
+        #primaryjoin=(talent_pool_table.c.project_id == id),
+        #secondaryjoin=(talent_pool_table.c.project_id == id),
+        # backref=db.backref("talent_pool_table", lazy='dynamic'), lazy='dynamic')
     # determine if a given user is included within the talent pool
 
     def is_talent(self, user):
@@ -95,7 +87,7 @@ class Recruiter_Project(db.Model):
 
     def delete(self):
         # remove self from recruiter projects table
-        db.session.remove(self)
+        db.session.delete(self)
 
 
 """TO DO: RELATIONSHIP DOES NOT WORK"""
@@ -106,6 +98,7 @@ class User_Profile(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.String(120), index=True, unique=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    profile_picture = db.Column(db.String(64))
     #user = relationship("User", back_populates="user_profile")
     user_bio = db.Column(db.String(256))
     skills = db.Column(db.String(256))
@@ -123,8 +116,11 @@ class User(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
+    first_name = db.Column(db.String(24))
+    last_name = db.Column(db.String(24))
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    #project = db.relationship('Recruiter_Project', backref='author', lazy='dynamic')
     """TO DO: RELATIONSHIP DOES NOT WORK"""
     #user_profile = relationship("User_Profile", uselist=False, back_populates="user")
     # db relationships for users with recruiter privelages and their projects
