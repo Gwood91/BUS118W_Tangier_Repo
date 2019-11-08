@@ -174,13 +174,29 @@ def remove_project(project_id):
 @app.route('/candidate_search', methods=['GET', 'POST'])
 @oidc.require_login
 def candidate_search():
+    query_results = []
+    current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+    user_projects = db.session.query(Recruiter_Project).filter_by(user_id=current_user.id).all()
+    results_len = len(query_results)
     if request.method == 'GET':
-        return render_template('recruiter_candidate_search.html', title='Candidate Search', i=5)
+        return render_template('recruiter_candidate_search.html', title='Candidate Search', results=query_results, results_len=results_len, i=5, user_projects=user_projects)
     # if the recruiter client is evaluating the potential match of a candidate
     if request.method == 'POST':
         # get the data supplied by the client and construct sanitzed queries in the db
-        candidate_text = str(request.form.get("candidateText", None))
-        search_criteria = str(request.form.get("searchCriteria", None))
+        major = str(request.form.get("major", None))
+        industry = str(request.form.get("industry", None))
+        keywords = str(request.form.get("keywords", None))
+        skills = str(request.form.get("skills", None))
+        projectName = str(request.form.get("projectName", None))
+        skill_search = "%{}%".format(skills)
+        #query_results = db.session.query.filter(User_Profile.skills.like(skill_search)).all()
+        #query_results = db.session.query(User_Profile).filter_by(skills=skills).all()
+        if skills != "":
+            query_results = db.session.query(User_Profile).\
+                filter(User_Profile.skills.contains(skill_search)).all()
+
+        results_len = len(query_results)
+        return render_template('recruiter_candidate_search.html', title='Candidate Search', results=query_results, results_len=results_len, i=5, user_projects=user_projects)
 
 
 @app.route('/newProject', methods=['GET', 'POST'])
