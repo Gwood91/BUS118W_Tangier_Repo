@@ -26,6 +26,10 @@ class User(db.Model):
     password_hash = db.Column(db.String(128))
     # db relationships for users with recruiter privelages and their projects
 
+    # db relationships for users and their private messages
+    messages_sent = db.relationship('Message', foreign_keys='Message.sender_id', backref='messenger', lazy='dynamic')
+    messages_received = db.relationship('Message', foreign_keys='Message.recipient_id', backref='messengee', lazy='dynamic')
+
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
@@ -43,7 +47,7 @@ class Post(db.Model):
     body = db.Column(db.String(140))
     # timestamp Will receive posts in chronological order
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    # user_id references an id value from the Users table
+    # user_id references an id value from the Users table, SQL-Alchemy automatically uses lower case characters for model names which is why user.id is a lower case u
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
@@ -57,9 +61,12 @@ for p in posts:
 
 
 # Work in progress... need to get to add to database***
+# Similiar to Post Table, except 2 user foreign keys are used here. The User model gets the 
+# relationship between the two users. 
 class Message(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
+    # references the id value from the Users table
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     body = db.Column(db.String(140))
