@@ -11,7 +11,7 @@ current_user = user_root = os.path.expanduser('~')
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/app/"
 # change the directory to the venv on the machine of the current user
 os.chdir(local_path)
-from __init__ import db, app
+from app import db, app
 
 
 def init_db():
@@ -19,31 +19,6 @@ def init_db():
         db.create_all()
 
 
-<<<<<<< HEAD
-class User(db.Model):
-    __table_args__ = {'extend_existing': True}
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
-    password_hash = db.Column(db.String(128))
-    # db relationships for users with recruiter privelages and their projects
-
-    # db relationships for users and their private messages
-    messages_sent = db.relationship('Message', foreign_keys='Message.sender_id', backref='messenger', lazy='dynamic')
-    messages_received = db.relationship('Message', foreign_keys='Message.recipient_id', backref='messengee', lazy='dynamic')
-
-    def __repr__(self):
-        return '<User {}>'.format(self.username)
-
-
-# Getting users from the database
-users = User.query.all()
-for u in users:
-    print(u.username)
-
-
-=======
->>>>>>> bca40bd03138814fdafb57f4fa5bf4dc51c74735
 # The Post class are blog posts written by Users
 class Post(db.Model):
     __table_args__ = {'extend_existing': True}
@@ -63,14 +38,7 @@ class Post(db.Model):
 # relationship between the two users. 
 class Message(db.Model):
     __table_args__ = {'extend_existing': True}
-<<<<<<< HEAD
-<<<<<<< HEAD
-    id = db.Column(db.Integer, primary_key=True)
-    # references the id value from the Users table
-=======
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True, unique=True)
->>>>>>> bca40bd03138814fdafb57f4fa5bf4dc51c74735
-=======
     id = db.Column(db.Integer, primary_key=True)
 >>>>>>> parent of bca40bd... Begin User Profile
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -96,11 +64,18 @@ class Recruiter_Project(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     title = db.Column(db.String(96))
     description = db.Column(db.String(256))
-    # talent_pool = db.relationship(
-        # "recruiter_project", secondary=talent_pool_table,
-        #primaryjoin=(talent_pool_table.c.project_id == id),
-        #secondaryjoin=(talent_pool_table.c.project_id == id),
-        # backref=db.backref("talent_pool_table", lazy='dynamic'), lazy='dynamic')
+    #timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    candidates = relationship("Project_Candidate")
+
+    # def candidate_pool(self):
+        #candidate_pool = db.session.query(User_Profile).filter(Project_Candidate.project_id == self.id).all()
+        # return candidate_pool
+    # one to many relationship
+    # candidates = db.relationship('Project_Canidate', backref='author', lazy='dynamic')
+    # candidates = db.relationship('Project_Candidate', primaryjoin="Recruiter_Project.id==Project_Candidate.project_id", backref="Project_Candidate", lazy='dynamic')
+    # candidates = db.relationship('Project_Candidate', primaryjoin="Recruiter_Project.id==Project_Candidate.project_id", backref=db.backref("Project_Candidate", lazy='dynamic'))
+    # candidates = db.relationship('Project_Candidate', primaryjoin="Recruiter_Project.id==Project_Candidate.project_id",
+                                 # backref='Recruiter_Project', lazy='dynamic')
     # determine if a given user is included within the talent pool
 
     def is_talent(self, user):
@@ -126,6 +101,15 @@ class Recruiter_Project(db.Model):
         db.session.delete(self)
 
 
+class Project_Candidate(db.Model):
+    __tablename__ = 'Project_Candidate'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    project_id = db.Column('project_id', db.Integer, db.ForeignKey('Recruiter_Project.id'))
+    #timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+
 """TO DO: RELATIONSHIP DOES NOT WORK"""
 
 
@@ -135,10 +119,10 @@ class User_Profile(db.Model):
     id = db.Column(db.String(120), index=True, unique=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     profile_picture = db.Column(db.String(64))
-    #user = relationship("User", back_populates="user_profile")
     user_bio = db.Column(db.String(256))
     skills = db.Column(db.String(256))
     experience = db.Column(db.String(256))
+    recruiter_projects = db.relationship('Recruiter_Project', backref='user_id', lazy='dynamic')
 
 
 # user_recruiter_project_table = db.Table('user_recruiter_project',
@@ -156,16 +140,11 @@ class User(db.Model):
     last_name = db.Column(db.String(24))
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    #project = db.relationship('Recruiter_Project', backref='author', lazy='dynamic')
-    """TO DO: RELATIONSHIP DOES NOT WORK"""
-    #user_profile = relationship("User_Profile", uselist=False, back_populates="user")
-    # db relationships for users with recruiter privelages and their projects
-    """TO DO: RELATIONSHIP DOES NOT WORK"""
-    # recruiter_project = db.relationship(
-        # "User", secondary=user_recruiter_project_table,
-        #primaryjoin=(user_recruiter_project_table.c.owner_id == id),
-        #secondaryjoin=(user_recruiter_project_table.c.owner_id == id),
-        # backref=db.backref("user_recruiter_project", lazy='dynamic'), lazy='dynamic')
+    profile = relationship("User_Profile", uselist=False, backref="User")
+
+    # def profile(self):
+        #profile = db.session.query(User_Profile).filter(User_Profile.user_id == self.id).first()
+        # return profile
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
