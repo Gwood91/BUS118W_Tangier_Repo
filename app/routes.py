@@ -12,7 +12,7 @@ print(os.getcwd())
 from flask import Flask, g, render_template, redirect, url_for, session, request, flash
 # these two modules are for the candidate checker
 # install this mkl for gensim error
-#from gensim.summarization.summarizer import summarize
+# from gensim.summarization.summarizer import summarize
 from fuzzywuzzy.fuzz import ratio
 # modules for okta authentication
 import oidc
@@ -29,7 +29,7 @@ current_user = user_root = os.path.expanduser('~')
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
 sys.path.append(local_path)
 from app import app, db
-from models import User, User_Profile, Recruiter_Project, Message, Post
+from models import User, User_Profile, Recruiter_Project, Project_Candidate, Message, Post
 
 
 # note: the return variable cannot have the same name as the function that is returning it
@@ -79,10 +79,46 @@ def login_handler():
     return render_template('home.html', title='Home')
 
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @oidc.require_login
 def profile():
-    return render_template('profile.html', title='Profile', i=5)
+    connections = 5  # this is just a dummy value until a network connections query link is established
+    current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+    exists = db.session.query(User_Profile.user_id).filter_by(user_id=current_user.id).scalar()
+    if exists is None:
+        u = User_Profile(user_id=current_user.id, profile_picture="", user_profile="", skills="", experience="")
+        db.session.add(u)
+        db.session.commit()
+    profile = db.session.query(User_Profile).filter_by(id=current_user.id).first()
+    if request.method == "GET":
+        return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture)
+    # update profile page
+    if request.method == 'POST':
+        if 'Save_Profile' in request.form:
+            user_bio = str(request.form.get("user_bio", None))
+            skills = str(request.form.get("skills", None))
+            experience = str(request.form.get("experience", None))
+            # save get data and save changes to db
+            profile.user_bio = user_bio
+            profile.skills = skills
+            profile.experience = experience
+            db.session.commit()
+            return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture)
+        elif 'save_img' in request.form:
+           # gather the image from the file upload
+            try:
+                image = request.files['Upload_Image']
+                # convert uploaded image to base64 and strip the detritus
+                profile_img = str(base64.b64encode(image.read()))
+                profile_img = profile_img.split("'")[1]
+                # with open(profile_img, "rb") as image_file:
+                   # profile_img = base64.b64encode(image_file.read())
+                profile.profile_picture = profile_img
+                db.session.commit()
+                print('image upload error', image)
+            except:
+                print('no file chosen')
+            return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture)
 
 
 @app.route('/messagePage', methods=['GET', 'POST'])
@@ -125,26 +161,26 @@ def recruiter_page():
             plt_a_base64 = "src=" + "data:image/png;base64,{}"
             plt_a_base64 = plt_a_base64.format(raw_base64[2:-1])  # format the base 64 string for html rendering
         """TODO: USE PLOTLY FOR THE GAUGE CHART/RADIAL GAUGE"""
-        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64, projects=user_projects)
+        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64, projects=user_projects, current_user=current_user)
     # if the recruiter client is evaluating the potential match of a candidate
     if request.method == 'POST':
         # get the input element with a given name from the posted from
         candidate_text = str(request.form.get("candidateText", None))
         search_criteria = str(request.form.get("searchCriteria", None))
         # analysing the natural language of the profile text
-        #candidate_summary = summarize(candidate_text)
+        # candidate_summary = summarize(candidate_text)
         candidate_match = ratio(candidate_text, search_criteria)
-        #summary_match = ratio(candidate_summary, search_criteria)
+        # summary_match = ratio(candidate_summary, search_criteria)
         current_cand_analysis = "Candidate Match: " + str(candidate_match)
-        #current_cand_analysis = "Candidate Match: " + str(candidate_match) + "%\n" + "Summary Match: " + str(summary_match) + "%"
-        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis=current_cand_analysis, i=5)
+        # current_cand_analysis = "Candidate Match: " + str(candidate_match) + "%\n" + "Summary Match: " + str(summary_match) + "%"
+        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis=current_cand_analysis, i=5, current_user=current_user)
 
 
 @app.route('/recruiter/view/<project_id>', methods=['GET', 'POST'])  # view/edit a given project
 @oidc.require_login
 def view_project(project_id):
     project = db.session.query(Recruiter_Project).filter_by(id=project_id).first_or_404()
-    candidate_pool = 15  # TODO: SET UP RELATIONSHIP WHEREBY EXISTS AN ASSOCIATION BETWEEN PROEJECTS AND USERS IN THE TALENT POOL
+    candidate_pool = db.session.query(Project_Candidate).filter_by(project_id=project.id).all()
     if request.method == 'GET':
         return render_template('recruiter_view_edit_project.html', title=project.title, project=project, candidate_pool=candidate_pool)
     if request.method == 'POST':
@@ -189,11 +225,11 @@ def candidate_search():
         skills = str(request.form.get("skills", None))
         projectName = str(request.form.get("projectName", None))
         skill_search = "%{}%".format(skills)
-        #query_results = db.session.query.filter(User_Profile.skills.like(skill_search)).all()
-        #query_results = db.session.query(User_Profile).filter_by(skills=skills).all()
-        if skills != "":
+        keyword_search = "%{}%".format(keywords)
+        if skills or keywords != "":
+            # multi part query, default without and_ method comma separated list of conditions are AND
             query_results = db.session.query(User_Profile).\
-                filter(User_Profile.skills.contains(skill_search)).all()
+                filter(User_Profile.skills.contains(skill_search), User_Profile.user_bio.contains(keyword_search)).all()
 
         results_len = len(query_results)
         return render_template('recruiter_candidate_search.html', title='Candidate Search', results=query_results, results_len=results_len, i=5, user_projects=user_projects)
