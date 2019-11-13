@@ -1,32 +1,22 @@
 
 {% extends "base.html" %}
 {% block content %}
-<div>
-    <h3>Edit Profile:</h3>
-</div>
 <div style="display:inline-flex">
-    <img src="data:image/png;base64,{{profile.profile_picture}}" style="width: 250px; height: 250px;">
-    <h3 style="vertical-align: middle; margin-top: auto">{{ g.user.profile.firstName }} {{ g.user.profile.lastName }}</h3>
+    <img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 250px; height: 250px;">
+    <h3 style="vertical-align: middle; margin-top: auto">User.First_Name User.Last_Name</h3>
 </div>
-<div>
-    <form method="post">
-        <input name = "save_img" type="submit" value="Save">
-        <input name = "Upload_Image" type="file" style="padding: 0;">
-        <div style="display: block; border: 1px black solid">
-            <h3>About:</h3>
-            <textarea style="width: 500px; height: 150px" id ="user_bio" name = "user_bio" >{{ profile.user_bio }} </textarea>
-            <h3>Experience:</h3>
-            <textarea style="width: 500px; height: 150px" id ="experience" name = "experience" >{{ profile.experience }} </textarea>
-            <h3>Skills:</h3>
-            <textarea style="width: 500px; height: 150px" id ="skills" name = "skills" >{{ profile.skills }} </textarea>
-            <input name = "Save_Profile" type="submit" value="Save Profile">
-        </div>
-    </form>
+<div style="display: block; border: 1px black solid">
+    <h3>About:</h3>
+    <textarea style="width: 500px; height: 150px"></textarea>
+    <h3>Experience:</h3>
+    <textarea style="width: 500px; height: 150px"></textarea>
+    <h3>Skills:</h3>
+    <textarea style="width: 500px; height: 150px"></textarea>
 </div>
 <hr>
 <div style="border: 1px black solid; display: block">
     <h3>Network:</h3>
-        {% for connection in range(connections)%} 
+        {% for i in range(i)%}
         <div style="display:inline-flex; margin-right: 50px">
             <div><img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 75px; height: 75px;">
                 <br>

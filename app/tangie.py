@@ -1,1 +1,1 @@
-# This is our core tangier library
+# This is a library of our core functionality of Tangier
