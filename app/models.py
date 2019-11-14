@@ -34,13 +34,12 @@ class Post(db.Model):
 
 
 # Work in progress... need to get to add to database***
-# Similiar to Post Table, except 2 user foreign keys are used here. The User model gets the 
-# relationship between the two users. 
+# Similiar to Post Table, except 2 user foreign keys are used here. The User model gets the
+# relationship between the two users.
 class Message(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True, unique=True)
-    id = db.Column(db.Integer, primary_key=True)
->>>>>>> parent of bca40bd... Begin User Profile
+
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     body = db.Column(db.String(140))
@@ -51,11 +50,11 @@ class Message(db.Model):
 
 
 # create an association table for talent pools and projects
-talent_pool_table = db.Table('talent_pool',
-                             db.Column('project_id', db.Integer, db.ForeignKey('recruiter__project.id')),  # use double underscore if needed
-                             db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-                             extend_existing=True
-                             )
+# talent_pool_table = db.Table('talent_pool',
+                             # db.Column('project_id', db.Integer, db.ForeignKey('recruiter__project.id')),  # use double underscore if needed
+                             #db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+                             # extend_existing=True
+                             # )
 
 
 class Recruiter_Project(db.Model):
@@ -106,7 +105,7 @@ class Project_Candidate(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    project_id = db.Column('project_id', db.Integer, db.ForeignKey('Recruiter_Project.id'))
+    project_id = db.Column('project_id', db.Integer, db.ForeignKey('recruiter__project.id'))
     #timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
 
@@ -122,8 +121,7 @@ class User_Profile(db.Model):
     user_bio = db.Column(db.String(256))
     skills = db.Column(db.String(256))
     experience = db.Column(db.String(256))
-    recruiter_projects = db.relationship('Recruiter_Project', backref='user_id', lazy='dynamic')
-
+    recruiter_projects = relationship('Recruiter_Project', backref='user_id')
 
 # user_recruiter_project_table = db.Table('user_recruiter_project',
                                         # db.Column('project_id', db.Integer, db.ForeignKey('Recruiter_Project.id')),  # use double underscore if needed
