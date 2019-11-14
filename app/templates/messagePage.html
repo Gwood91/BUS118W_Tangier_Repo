@@ -3,7 +3,12 @@
 <div id="sendDM">
     <form action="/profile.html" id="formID" method="POST">
         To: <select name="listOfUsers" id="selectAUser" required>
-            <option value="">User.First_Name User.Last_Name</option>
+            <option value="">Select a User</option>
+            {% for username in user%}
+               <option value="{{user.username}}">{{user.username}}</option>
+               {% endfor %}
+            <select id ="projectName" name = "projectName">   
+             </select>
         </select>
         <br><br>
         <textarea name="sendaDM" id="sendaDM" cols="50" rows="10" placeholder="Enter message..."></textarea>
