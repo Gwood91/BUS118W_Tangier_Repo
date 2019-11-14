@@ -80,6 +80,13 @@ def login_handler():
     return render_template('home.html', title='Home')
 
 
+@app.route('/logout', methods=['Post'])
+@oidc.require_login
+def logout_handler():
+    oidc.logout()
+    return redirect(url_for('home', title='Home'))
+
+
 @app.route('/profile', methods=['GET', 'POST'])
 @oidc.require_login
 def profile():
@@ -134,8 +141,8 @@ def messagePage():
             # get the data supplied by the client and construct sanitzed queries in the db
             recipient_id = str(request.form.get("selectAUser", None))
             message_body = str(request.form.get("sendaDM", None))
-            user = db.session.query(User).filter_by(email=g.user.profile.email).first() 
-            # user = db.session.query(User).filter_by(username=recipient).first() 
+            user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+            # user = db.session.query(User).filter_by(username=recipient).first()
             new_message = Message(author=user, recipient_id=recipient_id, body=message_body)
             # new_message = Message(sender_id=user, recipient_id=recipient_id, body=message_body)
             db.session.add(new_message)
