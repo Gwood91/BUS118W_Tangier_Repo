@@ -12,7 +12,7 @@ print(os.getcwd())
 from flask import Flask, g, render_template, redirect, url_for, session, request, flash
 # these two modules are for the candidate checker
 # install this mkl for gensim error
-#from gensim.summarization.summarizer import summarize
+# from gensim.summarization.summarizer import summarize
 from fuzzywuzzy.fuzz import ratio
 # modules for okta authentication
 import oidc
@@ -28,6 +28,7 @@ from io import StringIO
 current_user = user_root = os.path.expanduser('~')
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
 sys.path.append(local_path)
+"""an important distinction here is that we are importing the db module, not the db object created in __init__"""
 from app import app, db
 from models import User, User_Profile, Recruiter_Project, Message, Post, Project_Candidate
 
@@ -91,7 +92,7 @@ def profile():
         db.session.commit()
     profile = db.session.query(User_Profile).filter_by(id=current_user.id).first()
     if request.method == "GET":
-        return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture)
+        return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture, current_user=current_user)
     # update profile page
     if request.method == 'POST':
         if 'Save_Profile' in request.form:
@@ -103,7 +104,7 @@ def profile():
             profile.skills = skills
             profile.experience = experience
             db.session.commit()
-            return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture)
+            return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture, current_user=current_user)
         elif 'save_img' in request.form:
             # gather the image from the file upload
             try:
@@ -118,26 +119,41 @@ def profile():
                 print('image upload error', image)
             except:
                 print('no file chosen')
-        return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture)
+        return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture, current_user=current_user)
 
 
 @app.route('/messagePage', methods=['GET', 'POST'])
 def messagePage():
+<<<<<<< HEAD
         # Users = User.query.all()
         get_users = User.query.all()
         if request.method == 'GET':
             return render_template('messagePage.html', title='Direct Messaging', get_users=get_users)
     # if the recruiter client is evaluating the potential match of a candidate
+=======
+        get_users = db.session.query(User).filter_by(id=project_id).first_or_404()
+        if request.method == 'GET':
+            return render_template('messagePage.html', title='Direct Messaging')
+        # if the recruiter client is evaluating the potential match of a candidate
+>>>>>>> 158ecb0dd1a502c44184e30c2d1ab661831c6a83
         if request.method == 'POST':
             # get the data supplied by the client and construct sanitzed queries in the db
             recipient_id = str(request.form.get("selectAUser", None))
             message_body = str(request.form.get("sendaDM", None))
             user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+<<<<<<< HEAD
             sender_id = user 
             new_message = Message(sender_id=sender_id, recipient_id=recipient_id, body=message_body)
             db.session.add(new_message)
             db.session.commit()
             return render_template('messagePage.html', title='Direct Messaging', get_users=get_users)
+=======
+            sender_id = user
+            new_message = Message(sender_id=sender_id, recipient_id=recipient_id, body=message_body)
+            db.session.add(new_message)
+            db.session.commit()
+            return render_template('messagePage.html', title='Direct Messaging')
+>>>>>>> 158ecb0dd1a502c44184e30c2d1ab661831c6a83
 
 
 @app.route('/jobs')
@@ -182,11 +198,11 @@ def recruiter_page():
         candidate_text = str(request.form.get("candidateText", None))
         search_criteria = str(request.form.get("searchCriteria", None))
         # analysing the natural language of the profile text
-        #candidate_summary = summarize(candidate_text)
+        # candidate_summary = summarize(candidate_text)
         candidate_match = ratio(candidate_text, search_criteria)
-        #summary_match = ratio(candidate_summary, search_criteria)
+        # summary_match = ratio(candidate_summary, search_criteria)
         current_cand_analysis = "Candidate Match: " + str(candidate_match)
-        #current_cand_analysis = "Candidate Match: " + str(candidate_match) + "%\n" + "Summary Match: " + str(summary_match) + "%"
+        # current_cand_analysis = "Candidate Match: " + str(candidate_match) + "%\n" + "Summary Match: " + str(summary_match) + "%"
         return render_template('recruiter_page.html', title='Recruiter', candidate_analysis=current_cand_analysis, i=5)
 
 
@@ -239,8 +255,8 @@ def candidate_search():
         skills = str(request.form.get("skills", None))
         projectName = str(request.form.get("projectName", None))
         skill_search = "%{}%".format(skills)
-        #query_results = db.session.query.filter(User_Profile.skills.like(skill_search)).all()
-        #query_results = db.session.query(User_Profile).filter_by(skills=skills).all()
+        # query_results = db.session.query.filter(User_Profile.skills.like(skill_search)).all()
+        # query_results = db.session.query(User_Profile).filter_by(skills=skills).all()
         if skills != "":
             query_results = db.session.query(User_Profile).\
                 filter(User_Profile.skills.contains(skill_search)).all()
