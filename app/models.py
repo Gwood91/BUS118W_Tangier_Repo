@@ -11,6 +11,7 @@ current_user = user_root = os.path.expanduser('~')
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/app/"
 # change the directory to the venv on the machine of the current user
 os.chdir(local_path)
+"""an import and noteworthy distinction here is that we are importing a module named app not an object such as declared in __init__"""
 from app import db, app
 
 
@@ -62,6 +63,7 @@ class Recruiter_Project(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    profile_id = db.Column(db.Integer, db.ForeignKey('user__profile.id'))
     title = db.Column(db.String(96))
     description = db.Column(db.String(256))
     #timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
@@ -122,7 +124,7 @@ class User_Profile(db.Model):
     user_bio = db.Column(db.String(256))
     skills = db.Column(db.String(256))
     experience = db.Column(db.String(256))
-    recruiter_projects = relationship('Recruiter_Project', backref='user_id')
+    recruiter_projects = relationship('Recruiter_Project', backref='user_profile', lazy=True)
 
 # user_recruiter_project_table = db.Table('user_recruiter_project',
                                         # db.Column('project_id', db.Integer, db.ForeignKey('Recruiter_Project.id')),  # use double underscore if needed
