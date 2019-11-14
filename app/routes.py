@@ -29,7 +29,7 @@ current_user = user_root = os.path.expanduser('~')
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
 sys.path.append(local_path)
 from app import app, db
-from models import User, User_Profile, Recruiter_Project, Message, Post
+from models import User, User_Profile, Recruiter_Project, Message, Post, Project_Candidate
 
 
 # note: the return variable cannot have the same name as the function that is returning it
@@ -79,10 +79,46 @@ def login_handler():
     return render_template('home.html', title='Home')
 
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @oidc.require_login
 def profile():
-    return render_template('profile.html', title='Profile', i=5)
+    connections = 5  # this is just a dummy value until a network connections query link is established
+    current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+    exists = db.session.query(User_Profile.user_id).filter_by(user_id=current_user.id).scalar()
+    if exists is None:
+        u = User_Profile(id=current_user.id, user_id=current_user.id, profile_picture="", user_bio="", skills="", experience="")
+        db.session.add(u)
+        db.session.commit()
+    profile = db.session.query(User_Profile).filter_by(id=current_user.id).first()
+    if request.method == "GET":
+        return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture)
+    # update profile page
+    if request.method == 'POST':
+        if 'Save_Profile' in request.form:
+            user_bio = str(request.form.get("user_bio", None))
+            skills = str(request.form.get("skills", None))
+            experience = str(request.form.get("experience", None))
+            # save get data and save changes to db
+            profile.user_bio = user_bio
+            profile.skills = skills
+            profile.experience = experience
+            db.session.commit()
+            return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture)
+        elif 'save_img' in request.form:
+            # gather the image from the file upload
+            try:
+                image = request.files['Upload_Image']
+                # convert uploaded image to base64 and strip the detritus
+                profile_img = str(base64.b64encode(image.read()))
+                profile_img = profile_img.split("'")[1]
+                # with open(profile_img, "rb") as image_file:
+                            # profile_img = base64.b64encode(image_file.read())
+                profile.profile_picture = profile_img
+                db.session.commit()
+                print('image upload error', image)
+            except:
+                print('no file chosen')
+        return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture)
 
 
 @app.route('/messagePage', methods=['GET', 'POST'])
@@ -223,7 +259,7 @@ def create_project():
         project_title = str(request.form.get("projectTitle", None))
         project_description = str(request.form.get("projectDescription", None))
         user = db.session.query(User).filter_by(email=g.user.profile.email).first()
-        new_project = Recruiter_Project(user_id=user.id, description=project_description, title=project_title)
+        new_project = Recruiter_Project(profile_id=user.profile.id, user_id=user.id, description=project_description, title=project_title)
         db.session.add(new_project)
         db.session.commit()
         return redirect(url_for('recruiter_page'))
