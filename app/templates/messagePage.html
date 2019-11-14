@@ -4,8 +4,8 @@
     <form id="formID" method="POST">
         To: <select name="listOfUsers" id="selectAUser" required>
             <option value="">Select a User</option>
-            {% for u in get_users%}
-               <option value="{{u.username}}">{{u.username}}</option>
+            {% for username in user%}
+               <option value="{{user.username}}">{{user.username}}</option>
                {% endfor %}
             <select id ="projectName" name = "projectName">   
              </select>
