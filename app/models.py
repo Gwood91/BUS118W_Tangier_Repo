@@ -19,18 +19,20 @@ def init_db():
         db.create_all()
 
 
-<<<<<<< HEAD
 class User(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
+    username = db.Column(db.String(64), index=True, unique=True, nullable=False)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     # db relationships for users with recruiter privelages and their projects
 
+    # relationships for Post. Will be able to use author attribute to get the users post. Runs additional query in the background to get all the posts this user has created
+    posts = db.relationship('Post', backref='authoer', lazy=True)
+
     # db relationships for users and their private messages
-    messages_sent = db.relationship('Message', foreign_keys='Message.sender_id', backref='messenger', lazy='dynamic')
-    messages_received = db.relationship('Message', foreign_keys='Message.recipient_id', backref='messengee', lazy='dynamic')
+    #messages_sent = db.relationship('Message', foreign_keys='Message.sender_id', backref='messenger', lazy='dynamic')
+    #messages_received = db.relationship('Message', foreign_keys='Message.recipient_id', backref='messengee', lazy='dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -42,8 +44,6 @@ for u in users:
     print(u.username)
 
 
-=======
->>>>>>> bca40bd03138814fdafb57f4fa5bf4dc51c74735
 # The Post class are blog posts written by Users
 class Post(db.Model):
     __table_args__ = {'extend_existing': True}
@@ -52,7 +52,8 @@ class Post(db.Model):
     # timestamp Will receive posts in chronological order
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     # user_id references an id value from the Users table, SQL-Alchemy automatically uses lower case characters for model names which is why user.id is a lower case u
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    # This is going to be the ID of the user who authors the post**
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
@@ -63,16 +64,12 @@ class Post(db.Model):
 # relationship between the two users. 
 class Message(db.Model):
     __table_args__ = {'extend_existing': True}
-<<<<<<< HEAD
-<<<<<<< HEAD
+
     id = db.Column(db.Integer, primary_key=True)
     # references the id value from the Users table
-=======
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True, unique=True)
->>>>>>> bca40bd03138814fdafb57f4fa5bf4dc51c74735
-=======
     id = db.Column(db.Integer, primary_key=True)
->>>>>>> parent of bca40bd... Begin User Profile
+    id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     body = db.Column(db.String(140))
@@ -134,7 +131,8 @@ class User_Profile(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.String(120), index=True, unique=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    profile_picture = db.Column(db.String(64))
+    # Auto assign a default profile pic
+    profile_picture = db.Column(db.String(64), nullable=False, default='static/defaultHolder/default_user_profile.png')
     #user = relationship("User", back_populates="user_profile")
     user_bio = db.Column(db.String(256))
     skills = db.Column(db.String(256))
