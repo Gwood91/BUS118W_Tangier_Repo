@@ -5,7 +5,7 @@
         To: <select name="listOfUsers" id="selectAUser" required>
             <option value="">Select a User</option>
             {% for u in get_users%}
-               <option value="{{u.first_name}}">{{u.first_name}}</option>
+               <option value="{{u.username}}">{{u.username}}</option>
                {% endfor %}
             <select id ="projectName" name = "projectName">   
              </select>

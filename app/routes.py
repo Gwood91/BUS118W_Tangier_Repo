@@ -142,14 +142,11 @@ def messagePage():
             recipient_id = str(request.form.get("selectAUser", None))
             message_body = str(request.form.get("sendaDM", None))
             user = db.session.query(User).filter_by(email=g.user.profile.email).first()
-            # user = db.session.query(User).filter_by(username=recipient).first()
-            new_message = Message(author=user, recipient_id=recipient_id, body=message_body)
-            # new_message = Message(sender_id=user, recipient_id=recipient_id, body=message_body)
+            sender_id = user 
+            new_message = Message(sender_id=sender_id, recipient_id=recipient_id, body=message_body)
             db.session.add(new_message)
             db.session.commit()
-            # flash(_('Your message has been sent!'))
-            # return redirect(url_for('messagePage'))
-            return render_template('messagePage.html', title='Direct Messaging')
+            return render_template('messagePage.html', title='Direct Messaging', get_users=get_users)
 
 
 @app.route('/jobs')
