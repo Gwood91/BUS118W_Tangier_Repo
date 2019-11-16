@@ -81,7 +81,6 @@ def login_handler():
 
 
 @app.route('/logout', methods=['Post'])
-@oidc.require_login
 def logout_handler():
     oidc.logout()
     return redirect(url_for('home'))

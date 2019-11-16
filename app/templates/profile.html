@@ -7,7 +7,7 @@
     <h3 style="vertical-align: middle; margin-top: auto">{{ g.user.profile.firstName }} {{ g.user.profile.lastName }}</h3>
 </div>
 <div>
-    <form method="post">
+    <form method="post" action="{{ url_for('profile') }}" method="post" enctype="multipart/form-data">
         <input name="save_img" type="submit" value="Save">
         <input name="Upload_Image" type="file" style="padding: 0;">
         <div style="display: block; border: 1px black solid">
