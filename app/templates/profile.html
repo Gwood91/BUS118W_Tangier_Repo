@@ -3,7 +3,7 @@
     <h3>Edit Profile:</h3>
 </div>
 <div style="display:inline-flex">
-    <img src="data:image/png;base64,{{profile.profile_picture}}" style="width: 250px; height: 250px;">
+    <img src="data:image/png;base64,{{current_user.profile.profile_picture}}" style="width: 250px; height: 250px;">
     <h3 style="vertical-align: middle; margin-top: auto">{{ g.user.profile.firstName }} {{ g.user.profile.lastName }}</h3>
 </div>
 <div>

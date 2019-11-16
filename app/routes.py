@@ -98,7 +98,7 @@ def profile():
         db.session.commit()
     profile = db.session.query(User_Profile).filter_by(id=current_user.id).first()
     if request.method == "GET":
-        return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture, current_user=current_user)
+        return render_template('profile.html', title='Profile', connections=5, current_user=current_user)
     # update profile page
     if request.method == 'POST':
         if 'Save_Profile' in request.form:
