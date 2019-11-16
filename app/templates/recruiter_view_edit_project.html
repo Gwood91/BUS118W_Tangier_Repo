@@ -1,37 +1,36 @@
-
-{% extends "base.html" %}
-{% block content %}
+ {% extends "base.html" %} {% block app_content %}
 
 <div>
-    <h2>{{ project.title }}</h2>    
-        <div style="width: 700px; height: 250px; background: rgb(226, 226, 226); border: solid black 1px;">
-            <h3>Description:</h3>
-            <div>
-                <form method="POST" > 
-                    Edit Project Title:<input id ="projectTitle" name = "projectTitle" type="search" style="width: 300px;" value="{{ project.title }}">
-                    <br>
-                    Edit Project Description:<textarea id ="projectDescription" name = "projectDescription" style="width: 300px; height: 50px;">{{ project.description}}</textarea> 
-                    <input type="submit" value="Save">
-                </form>
-                <a href="{{ url_for('remove_project', project_id=project.id) }}"><button>Remove</button></a>
-                <div style="display: inline-flex">
-                    <a href="/recruiter" style="float:right"><button>Return to Recruiter View</button></a>
-                </div>
-            </div>
-        </div>
+    <h2>{{ project.title }}</h2>
+    <div style="width: 700px; height: 250px; background: rgb(226, 226, 226); border: solid black 1px;">
+        <h3>Description:</h3>
         <div>
-            <h3>Candiate Pool:</h3>
-            <div style="display: inline-flex; border: black 1px solid; width: 420px; height: 150px; background: rgb(236, 236, 236); padding-right: auto; padding-left: auto; overflow: scroll; overflow-y: hidden">
-                {% for i in range(candidate_pool)%}
-                <div style="display:inline-block">
-                    <div style="display:block">
-                        <img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 50px; height: 50px;">
-                        <br>
-                        <a  href="/recruiter"><p style="text-align: center">Joe Blow</p></a>
-                    </div>
-                </div>
-                {% endfor %} 
+            <form method="POST">
+                Edit Project Title:<input id="projectTitle" name="projectTitle" type="search" style="width: 300px;" value="{{ project.title }}">
+                <br> Edit Project Description:<textarea id="projectDescription" name="projectDescription" style="width: 300px; height: 50px;">{{ project.description}}</textarea>
+                <input type="submit" value="Save">
+            </form>
+            <a href="{{ url_for('remove_project', project_id=project.id) }}"><button>Remove</button></a>
+            <div style="display: inline-flex">
+                <a href="/recruiter" style="float:right"><button>Return to Recruiter View</button></a>
             </div>
         </div>
+    </div>
+    <div>
+        <h3>Candiate Pool:</h3>
+        <div style="display: inline-flex; border: black 1px solid; width: 420px; height: 150px; background: rgb(236, 236, 236); padding-right: auto; padding-left: auto; overflow: scroll; overflow-y: hidden">
+            {% for i in range(candidate_pool)%}
+            <div style="display:inline-block">
+                <div style="display:block">
+                    <img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 50px; height: 50px;">
+                    <br>
+                    <a href="/recruiter">
+                        <p style="text-align: center">Joe Blow</p>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 {% endblock %}

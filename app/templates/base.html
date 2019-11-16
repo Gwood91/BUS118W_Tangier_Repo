@@ -1,15 +1,18 @@
+{% extends 'bootstrap/base.html' %}
 <html>
 
+
 <head>
-    {% if title %}
+    {% block title %} {% if title %}
     <title>{{ title }}</title>
     {% else %}
     <title>Welcome</title>
-    {% endif %}
+    {% endif %} {% endblock %}
 </head>
 
 <body>
     <!-- Adding a navbar to include in all template pages -->
+    {% block navbar %}
     <div id="NavBar">
         <div style="display: inline-flex">
             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ9aGT0JLi7-nKbbvDl8raJV2kdmlSo4NUKIAZ5LKih5g2pGzSBQ" style="width: 50px; height: 50px">
@@ -33,7 +36,7 @@
             {% endif %}
         </div>
     </div>
-    {% block content %}{% endblock %}
+    {% endblock %} {% block content %} {% block app_content %}{% endblock %} {% endblock %}
     <br>
     <hr>
     <div id="bottomNav" style="text-align:center; padding-top: 0px; padding-top: 0px; position: fixed; height: 40px; width:100%; bottom: 0; background-color:black;color:white;">

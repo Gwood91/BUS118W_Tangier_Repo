@@ -1,6 +1,4 @@
-
-{% extends "base.html" %}
-{% block content %}
+ {% extends "base.html" %} {% block app_content %}
 <div>
     <h3>Edit Profile:</h3>
 </div>
@@ -10,27 +8,28 @@
 </div>
 <div>
     <form method="post">
-        <input name = "save_img" type="submit" value="Save">
-        <input name = "Upload_Image" type="file" style="padding: 0;">
+        <input name="save_img" type="submit" value="Save">
+        <input name="Upload_Image" type="file" style="padding: 0;">
         <div style="display: block; border: 1px black solid">
             <h3>About:</h3>
-            <textarea style="width: 500px; height: 150px" id ="user_bio" name = "user_bio" >{{ current_user.profile.user_bio }} </textarea>
+            <textarea style="width: 500px; height: 150px" id="user_bio" name="user_bio">{{ current_user.profile.user_bio }} </textarea>
             <h3>Experience:</h3>
-            <textarea style="width: 500px; height: 150px" id ="experience" name = "experience" >{{ current_user.profile.experience }} </textarea>
+            <textarea style="width: 500px; height: 150px" id="experience" name="experience">{{ current_user.profile.experience }} </textarea>
             <h3>Skills:</h3>
-            <textarea style="width: 500px; height: 150px" id ="skills" name = "skills" >{{ current_user.profile.skills }} </textarea>
-            <input name = "Save_Profile" type="submit" value="Save Profile">
+            <textarea style="width: 500px; height: 150px" id="skills" name="skills">{{ current_user.profile.skills }} </textarea>
+            <input name="Save_Profile" type="submit" value="Save Profile">
         </div>
     </form>
-<hr>
-<div style="border: 1px black solid; display: block">
-    <h3>Network:</h3>
-        {% for connection in range(connections)%} 
+    <hr>
+    <div style="border: 1px black solid; display: block">
+        <h3>Network:</h3>
+        {% for connection in range(connections)%}
         <div style="display:inline-flex; margin-right: 50px">
             <div><img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 75px; height: 75px;">
                 <br>
-                <p style="text-align: center">Joe Blow</p></div>
+                <p style="text-align: center">Joe Blow</p>
+            </div>
         </div>
-        {% endfor %} 
-</div>
-{% endblock %}
+        {% endfor %}
+    </div>
+    {% endblock %}

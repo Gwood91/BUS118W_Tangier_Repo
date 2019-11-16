@@ -123,37 +123,26 @@ def profile():
 
 
 @app.route('/messagePage', methods=['GET', 'POST'])
+# @app.route('/send_message/<recipient>', methods=['GET', 'POST'])
 def messagePage():
-<<<<<<< HEAD
         # Users = User.query.all()
         get_users = User.query.all()
         if request.method == 'GET':
             return render_template('messagePage.html', title='Direct Messaging', get_users=get_users)
     # if the recruiter client is evaluating the potential match of a candidate
-=======
-        get_users = db.session.query(User).filter_by(id=project_id).first_or_404()
-        if request.method == 'GET':
-            return render_template('messagePage.html', title='Direct Messaging')
-        # if the recruiter client is evaluating the potential match of a candidate
->>>>>>> 158ecb0dd1a502c44184e30c2d1ab661831c6a83
         if request.method == 'POST':
             # get the data supplied by the client and construct sanitzed queries in the db
             recipient_id = str(request.form.get("selectAUser", None))
             message_body = str(request.form.get("sendaDM", None))
-            user = db.session.query(User).filter_by(email=g.user.profile.email).first()
-<<<<<<< HEAD
-            sender_id = user 
-            new_message = Message(sender_id=sender_id, recipient_id=recipient_id, body=message_body)
+            user = db.session.query(User).filter_by(email=g.user.profile.email).first() 
+            # user = db.session.query(User).filter_by(username=recipient).first() 
+            new_message = Message(author=user, recipient_id=recipient_id, body=message_body)
+            # new_message = Message(sender_id=user, recipient_id=recipient_id, body=message_body)
             db.session.add(new_message)
             db.session.commit()
-            return render_template('messagePage.html', title='Direct Messaging', get_users=get_users)
-=======
-            sender_id = user
-            new_message = Message(sender_id=sender_id, recipient_id=recipient_id, body=message_body)
-            db.session.add(new_message)
-            db.session.commit()
+            # flash(_('Your message has been sent!'))
+            # return redirect(url_for('messagePage'))
             return render_template('messagePage.html', title='Direct Messaging')
->>>>>>> 158ecb0dd1a502c44184e30c2d1ab661831c6a83
 
 
 @app.route('/jobs')

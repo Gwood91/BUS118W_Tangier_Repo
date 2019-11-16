@@ -1,23 +1,20 @@
-
-{% extends "base.html" %}
-{% block content %}
+ {% extends "base.html" %} {% block app_content %}
 
 <div>
-    <h2>New Project</h2>    
-        <div style="width: 700px; height: 250px; background: rgb(226, 226, 226); border: solid black 1px;">
-            <h3>Description:</h3>
-            <div>
-                <form method="POST" > 
-                    Project Title:<input id ="projectTitle" name = "projectTitle" type="search">
-                    <br>
-                    Project Description:<textarea id ="projectDescription" name = "projectDescription"></textarea> 
-                    <input type="submit" value="Create">
-                </form>
-                <div style="display: inline-flex">
-                    <a href="/recruiter" style="float:right"><button>Return to Recruiter View</button></a>
-                </div>
+    <h2>New Project</h2>
+    <div style="width: 700px; height: 250px; background: rgb(226, 226, 226); border: solid black 1px;">
+        <h3>Description:</h3>
+        <div>
+            <form method="POST">
+                Project Title:<input id="projectTitle" name="projectTitle" type="search">
+                <br> Project Description:<textarea id="projectDescription" name="projectDescription"></textarea>
+                <input type="submit" value="Create">
+            </form>
+            <div style="display: inline-flex">
+                <a href="/recruiter" style="float:right"><button>Return to Recruiter View</button></a>
             </div>
         </div>
-       
+    </div>
+
 </div>
 {% endblock %}

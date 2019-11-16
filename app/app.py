@@ -5,6 +5,7 @@ from flask import Flask
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
+from flask_bootstrap import Bootstrap
 
 current_user = os.path.expanduser('~')
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
@@ -17,8 +18,11 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.config['SQLALCHEMY_DATABASE_URI'] = local_engine_path
 
+# getting the css framework
+bootstrap = Bootstrap(app)
 # db object represents the database
 db = SQLAlchemy(app)
+
 
 # change the directory to current user
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"

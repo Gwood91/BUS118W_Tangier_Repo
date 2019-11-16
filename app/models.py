@@ -14,11 +14,9 @@ os.chdir(local_path)
 """an import and noteworthy distinction here is that we are importing a module named app not an object such as declared in __init__"""
 from app import db, app
 
-
 def init_db():
     with app.app_context():
         db.create_all()
-
 
 # The Post class are blog posts written by Users
 class Post(db.Model):
@@ -41,22 +39,13 @@ class Post(db.Model):
 class Message(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True, unique=True)
-
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     body = db.Column(db.String(140))
-    # timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
         return '<Message {}>'.format(self.body)
-
-
-# create an association table for talent pools and projects
-# talent_pool_table = db.Table('talent_pool',
-                             # db.Column('project_id', db.Integer, db.ForeignKey('recruiter__project.id')),  # use double underscore if needed
-                             #db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-                             # extend_existing=True
-                             # )
 
 
 class Recruiter_Project(db.Model):
@@ -66,7 +55,7 @@ class Recruiter_Project(db.Model):
     profile_id = db.Column(db.Integer, db.ForeignKey('user__profile.id'))
     title = db.Column(db.String(96))
     description = db.Column(db.String(256))
-    #timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     candidates = relationship("Project_Candidate")
 
     # def candidate_pool(self):
@@ -102,35 +91,24 @@ class Recruiter_Project(db.Model):
         # remove self from recruiter projects table
         db.session.delete(self)
 
-
 class Project_Candidate(db.Model):
     __tablename__ = 'Project_Candidate'
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     project_id = db.Column('project_id', db.Integer, db.ForeignKey('recruiter__project.id'))
-    #timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-
-
-"""TO DO: RELATIONSHIP DOES NOT WORK"""
-
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
 class User_Profile(db.Model):
     # __tablename__ = "user_profile"
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.String(120), index=True, unique=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    profile_picture = db.Column(db.String(64))
+    profile_picture = db.Column(db.String(128))
     user_bio = db.Column(db.String(256))
     skills = db.Column(db.String(256))
     experience = db.Column(db.String(256))
     recruiter_projects = relationship('Recruiter_Project', backref='user_profile', lazy=True)
-
-# user_recruiter_project_table = db.Table('user_recruiter_project',
-                                        # db.Column('project_id', db.Integer, db.ForeignKey('Recruiter_Project.id')),  # use double underscore if needed
-                                        #db.Column('owner_id', db.Integer, db.ForeignKey('user.id')),
-                                        # extend_existing=True
-                                        # )
 
 
 class User(db.Model):
@@ -140,18 +118,12 @@ class User(db.Model):
     first_name = db.Column(db.String(24))
     last_name = db.Column(db.String(24))
     email = db.Column(db.String(120), index=True, unique=True)
-    password_hash = db.Column(db.String(128))
     profile = relationship("User_Profile", uselist=False, backref="User")
-    
-
-    # def profile(self):
-        #profile = db.session.query(User_Profile).filter(User_Profile.user_id == self.id).first()
-        # return profile
+    messages_sent = db.relationship('Message', foreign_keys='Message.sender_id', backref='author', lazy='dynamic')
+    messages_received = db.relationship('Message', foreign_keys='Message.recipient_id', backref='recipient', lazy='dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
-
-
 
 # initialize the database
 init_db()
