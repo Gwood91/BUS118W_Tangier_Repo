@@ -84,7 +84,7 @@ def login_handler():
 @oidc.require_login
 def logout_handler():
     oidc.logout()
-    return redirect(url_for('home', title='Home'))
+    return redirect(url_for('home'))
 
 
 @app.route('/profile', methods=['GET', 'POST'])
@@ -132,7 +132,7 @@ def profile():
 @app.route('/messagePage', methods=['GET', 'POST'])
 # @app.route('/send_message/<recipient>', methods=['GET', 'POST'])
 def messagePage():
-        get_users = db.session.query(User).filter_by(id=project_id).first_or_404()
+    get_users = db.session.query(User).filter_by(id=project_id).first_or_404()
     if request.method == 'GET':
         return render_template('messagePage.html', title='Direct Messaging')
     # if the recruiter client is evaluating the potential match of a candidate
@@ -141,7 +141,7 @@ def messagePage():
         recipient_id = str(request.form.get("selectAUser", None))
         message_body = str(request.form.get("sendaDM", None))
         user = db.session.query(User).filter_by(email=g.user.profile.email).first()
-        sender_id = user 
+        sender_id = user
         new_message = Message(sender_id=sender_id, recipient_id=recipient_id, body=message_body)
         db.session.add(new_message)
         db.session.commit()
