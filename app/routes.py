@@ -23,6 +23,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from io import StringIO
+from flask_wtf import FlaskForm
+
 """TODO: Probably gonna need to change the double directory change here, need to consolidate"""
 # change the directory to current user
 current_user = user_root = os.path.expanduser('~')

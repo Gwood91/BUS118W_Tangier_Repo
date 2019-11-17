@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block app_content %}
+{% extends "base.html" %} {% import 'bootstrap/wtf.html' as wtf %} {% block content %}
 <p>Direct message page</p>
 <div id="sendDM">
     <form id="formID" method="POST">
@@ -15,4 +15,5 @@
         <input type="Submit" value="Send">
     </form>
 </div>
+
 {% endblock %}
