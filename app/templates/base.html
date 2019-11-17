@@ -25,17 +25,14 @@
             <a href="/messagePage">Messaging</a>
             <a href="/jobs">Jobs</a>
             <a href="/myNetwork">My Network</a>
-            <a href="/recruiter">Recruiter</a> 
-            {% if not g.user %}
+            <a href="/recruiter">Recruiter</a> {% if not g.user %}
             <form action="{{ url_for('login_handler') }}" method="post" enctype="multipart/form-data">
                 <input name="login" type="submit" value="Log In/Register">
             </form>
             <p style="font-size:12px">Welcome</p>
             {% else %}
-            <form action="{{ url_for('logout_handler') }}" method="post" enctype="multipart/form-data">
-                <input name="logout" type="submit" value="Logout">
+            <input name="logout" type="submit" value="Logout">
             <p style="font-size:12px; display: inline-block;">Welcome, {{ g.user.profile.firstName }}!</p>
-            </form>
             {% endif %}
         </div>
     </div>
