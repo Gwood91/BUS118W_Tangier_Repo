@@ -82,6 +82,12 @@ def login_handler():
     return render_template('home.html', title='Home')
 
 
+@app.route('/logout', methods=['Post'])
+def logout_handler():
+    oidc.logout()
+    return redirect(url_for('home'))
+
+
 @app.route('/profile', methods=['GET', 'POST'])
 @oidc.require_login
 def profile():
@@ -94,7 +100,7 @@ def profile():
         db.session.commit()
     profile = db.session.query(User_Profile).filter_by(id=current_user.id).first()
     if request.method == "GET":
-        return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture, current_user=current_user)
+        return render_template('profile.html', title='Profile', connections=5, current_user=current_user)
     # update profile page
     if request.method == 'POST':
         if 'Save_Profile' in request.form:
@@ -127,24 +133,20 @@ def profile():
 @app.route('/messagePage', methods=['GET', 'POST'])
 # @app.route('/send_message/<recipient>', methods=['GET', 'POST'])
 def messagePage():
-        # Users = User.query.all()
-        get_users = User.query.all()
-        if request.method == 'GET':
-            return render_template('messagePage.html', title='Direct Messaging', get_users=get_users)
+    get_users = db.session.query(User).filter_by(id=project_id).first_or_404()
+    if request.method == 'GET':
+        return render_template('messagePage.html', title='Direct Messaging')
     # if the recruiter client is evaluating the potential match of a candidate
-        if request.method == 'POST':
-            # get the data supplied by the client and construct sanitzed queries in the db
-            recipient_id = str(request.form.get("selectAUser", None))
-            message_body = str(request.form.get("sendaDM", None))
-            user = db.session.query(User).filter_by(email=g.user.profile.email).first() 
-            # user = db.session.query(User).filter_by(username=recipient).first() 
-            new_message = Message(author=user, recipient_id=recipient_id, body=message_body)
-            # new_message = Message(sender_id=user, recipient_id=recipient_id, body=message_body)
-            db.session.add(new_message)
-            db.session.commit()
-            # flash(_('Your message has been sent!'))
-            # return redirect(url_for('messagePage'))
-            return render_template('messagePage.html', title='Direct Messaging')
+    if request.method == 'POST':
+        # get the data supplied by the client and construct sanitzed queries in the db
+        recipient_id = str(request.form.get("selectAUser", None))
+        message_body = str(request.form.get("sendaDM", None))
+        user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+        sender_id = user
+        new_message = Message(sender_id=sender_id, recipient_id=recipient_id, body=message_body)
+        db.session.add(new_message)
+        db.session.commit()
+        return render_template('messagePage.html', title='Direct Messaging')
 
 
 @app.route('/jobs')
