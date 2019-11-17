@@ -5,11 +5,12 @@
         <div>
             <p style="margin-top: 10px">Projects</p>
             <div style="display: inline-block; border: black 1px solid; width: 240px; height: 65%; background: rgb(236, 236, 236); padding-right: auto; padding-left: auto; overflow:auto; direction: ltr;">
-                {% for project in projects%}
+                {% for project in current_user.profile.recruiter_projects%}
                 <p>{{ project.title }}</p>
                 <a href="{{ url_for('view_project', project_id=project.id) }}"><button>View/Edit</button></a>
                 <a href="{{ url_for('remove_project', project_id=project.id) }}"><button>Remove</button></a>
-                <hr> {% endfor %}
+                <hr> 
+                {% endfor %}
             </div>
             <a href="/newProject"><button style="float: right">New Project</button></a>
         </div>
@@ -19,15 +20,19 @@
             <p style="margin-top: 10px">Candidate Pool</p>
             <div>
                 <div style="display: inline-flex; border: black 1px solid; width: 245px; height: 65%; background: rgb(236, 236, 236); padding-right: auto; padding-left: auto; overflow: scroll; overflow-y: hidden">
-                    {% for i in range(i)%}
+                    {% if current_user.profile.recruiter_projects.candidates is not none %}
+                    {% for candidate in current_user.profile.recruiter_projects.candidates%}
                     <div style="display:inline-block">
                         <div style="display:block">
                             <img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 50px; height: 50px;">
                             <br>
-                            <p style="text-align: center">Joe Blow</p>
+                            <p style="text-align: center">{{candidate.user_id}}</p>
                         </div>
                     </div>
                     {% endfor %}
+                    {%else %}
+                    <p style="text-align: center">There are currently no candidates to display</p>
+                    {% endif %}
                 </div>
                 <a href="/candidate_search"><button style="float: right">New Search</button></a>
             </div>
