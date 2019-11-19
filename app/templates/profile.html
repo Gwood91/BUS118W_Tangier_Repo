@@ -1,4 +1,17 @@
- {% extends "base.html" %} {% block app_content %}
+ {% extends "base.html" %} 
+ {% block content %}
+ <div class="media">
+    <div class="media-left media-middle">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ9aGT0JLi7-nKbbvDl8raJV2kdmlSo4NUKIAZ5LKih5g2pGzSBQ" class="media-object" style="width:60px">
+    </div>
+    <div class="media-body">
+      <h2 class="media-heading">TANGIER</h2>
+      <!-- <i>Elevate your career!</i> -->
+      <i>The power of people!</i>
+      <br>
+      <i>Squeeze the most juice from your career!</i>
+    </div>
+  </div>
 <div>
     <h3>Edit Profile:</h3>
 </div>
@@ -6,18 +19,18 @@
     <img src="data:image/png;base64,{{current_user.profile.profile_picture}}" style="width: 250px; height: 250px;">
     <h3 style="vertical-align: middle; margin-top: auto">{{ g.user.profile.firstName }} {{ g.user.profile.lastName }}</h3>
 </div>
-<div>
+<div class="form-group">
     <form method="post" action="{{ url_for('profile') }}" method="post" enctype="multipart/form-data">
-        <input name="save_img" type="submit" value="Save">
-        <input name="Upload_Image" type="file" style="padding: 0;">
+        <input name="save_img" type="submit" value="Save" class="btn btn-default">
+        <input name="Upload_Image" type="file" style="padding: 0;" class="btn btn-default">
         <div style="display: block; border: 1px black solid">
             <h3>About:</h3>
-            <textarea style="width: 500px; height: 150px" id="user_bio" name="user_bio">{{ current_user.profile.user_bio }} </textarea>
+            <textarea style="width: 500px; height: 150px" id="user_bio" name="user_bio" class="form-control">{{ current_user.profile.user_bio }} </textarea>
             <h3>Experience:</h3>
-            <textarea style="width: 500px; height: 150px" id="experience" name="experience">{{ current_user.profile.experience }} </textarea>
+            <textarea style="width: 500px; height: 150px" id="experience" name="experience" class="form-control">{{ current_user.profile.experience }} </textarea>
             <h3>Skills:</h3>
-            <textarea style="width: 500px; height: 150px" id="skills" name="skills">{{ current_user.profile.skills }} </textarea>
-            <input name="Save_Profile" type="submit" value="Save Profile">
+            <textarea style="width: 500px; height: 150px" id="skills" name="skills" class="form-control">{{ current_user.profile.skills }} </textarea>
+            <input name="Save_Profile" type="submit" value="Save Profile" class="btn btn-default">
         </div>
     </form>
     <hr>

@@ -1,10 +1,23 @@
- {% extends "base.html" %} {% block app_content %}
+ {% extends "base.html" %} 
+ {% block content %}
+ <div class="media">
+    <div class="media-left media-middle">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ9aGT0JLi7-nKbbvDl8raJV2kdmlSo4NUKIAZ5LKih5g2pGzSBQ" class="media-object" style="width:60px">
+    </div>
+    <div class="media-body">
+      <h2 class="media-heading">TANGIER</h2>
+      <!-- <i>Elevate your career!</i> -->
+      <i>The power of people!</i>
+      <br>
+      <i>Squeeze the most juice from your career!</i>
+    </div>
+  </div>
 <h3>Recruiter View</h3>
 <div>
-    <div style="display: inline-flex; border: black 1px solid; width: 250px; height: 200px; background: rgb(255, 123, 0)">
-        <div>
+    <div style="display: inline-flex; border: black 1px solid; width: 250px; height: 200px; background: rgb(255, 123, 0)" class="form-group">
+        <div class="form-group">
             <p style="margin-top: 10px">Projects</p>
-            <div style="display: inline-block; border: black 1px solid; width: 240px; height: 65%; background: rgb(236, 236, 236); padding-right: auto; padding-left: auto; overflow:auto; direction: ltr;">
+            <div style="display: inline-block; border: black 1px solid; width: 240px; height: 65%; background: rgb(236, 236, 236); padding-right: auto; padding-left: auto; overflow:auto; direction: ltr;" class="form-group">
                 {% for project in current_user.profile.recruiter_projects%}
                 <p>{{ project.title }}</p>
                 <a href="{{ url_for('view_project', project_id=project.id) }}"><button>View/Edit</button></a>
@@ -15,15 +28,15 @@
             <a href="/newProject"><button style="float: right">New Project</button></a>
         </div>
     </div>
-    <div style="display: inline-flex; border: black 1px solid; width: 250px; height: 200px; background: rgb(236, 236, 236);">
-        <div>
+    <div style="display: inline-flex; border: black 1px solid; width: 250px; height: 200px; background: rgb(236, 236, 236);" class="form-group">
+        <div class="form-group">
             <p style="margin-top: 10px">Candidate Pool</p>
-            <div>
-                <div style="display: inline-flex; border: black 1px solid; width: 245px; height: 65%; background: rgb(236, 236, 236); padding-right: auto; padding-left: auto; overflow: scroll; overflow-y: hidden">
+            <div class="form-group">
+                <div style="display: inline-flex; border: black 1px solid; width: 245px; height: 65%; background: rgb(236, 236, 236); padding-right: auto; padding-left: auto; overflow: scroll; overflow-y: hidden" class="form-group">
                     {% if current_user.profile.recruiter_projects.candidates is not none %}
                     {% for candidate in current_user.profile.recruiter_projects.candidates%}
-                    <div style="display:inline-block">
-                        <div style="display:block">
+                    <div style="display:inline-block" class="form-group">
+                        <div style="display:block" class="form-group">
                             <img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 50px; height: 50px;">
                             <br>
                             <p style="text-align: center">{{candidate.user_id}}</p>
@@ -41,19 +54,19 @@
 </div>
 <div>
     <h3>Dashboard</h3>
-    <div style="width: 450px; height: 250px; border: solid black 1px">
-        <div style="display: inline-flex">
-            <div style="width: 225px; height: 250px; background: rgb(226, 226, 226)">
+    <div style="width: 450px; height: 250px; border: solid black 1px" class="form-group">
+        <div style="display: inline-flex" class="form-group">
+            <div style="width: 225px; height: 250px; background: rgb(226, 226, 226)" class="form-group">
                 <img {{plt_a}} style="width: 200px; height: 200px; text-align: center;  border: none; display: block; vertical-align: middle; margin-top: 100;
                 margin: 0 auto;">
             </div>
-            <div style="width: 225px; height: 250px;">
-                <div style="display: inline-block; width: 225px; height: 125px; background: blueviolet">
+            <div style="width: 225px; height: 250px;" class="form-group">
+                <div style="display: inline-block; width: 225px; height: 125px; background: blueviolet" class="form-group">
                     <img src="https://images.squarespace-cdn.com/content/v1/55ff5070e4b0333acc0895c0/1454701647329-NEFF9ODTAJ1G1G274H1M/ke17ZwdGBToddI8pDm48kCR6a5JeC5JWrXe9YaB7sYFZw-zPPgdn4jUwVcJE1ZvWEtT5uBSRWt4vQZAgTJucoTqqXjS3CfNDSuuf31e0tVGo2K-r6KoC_ccDMHjdY7DgKbShbQnAvRbhNVmzddzHnzqWIIaSPh2v08GbKqpiV54/image-asset.png?format=1500w"
                         style="width: 225; height: 150; text-align: center;  border: none; display: block;">
                 </div>
-                <div style="display: inline-block; width: 225px; height: 125px; background: orange">
-                    <img src="https://previews.123rf.com/images/icedesign/icedesign1510/icedesign151000003/46727034-abstract-car-speedometer-background-vector.jpg" style="width: 225; height: 125; text-align: center;  border: none; display: block;">
+                <div style="display: inline-block; width: 225px; height: 125px; background: orange"class="form-group">
+                    <img src="https://previews.123rf.com/images/icedesign/icedesign1510/icedesign151000003/46727034-abstract-car-speedometer-background-vector.jpg" style="width: 225; height: 125; text-align: center;  border: none; display: block;" class="img-fluid">
                 </div>
             </div>
         </div>
@@ -62,11 +75,11 @@
 <h3>Testing Candidate Analysis Algo</h3>
 <div class=>
     <form method="POST">
-        <div style="display: inline-flex;">
+        <div style="display: inline-flex;" class="form-group">
             User Profile Text: <textarea id="candidateText" name="candidateText" style="display: block; width: 250; height: 90; background: rgb(236, 236, 236)"></textarea> Candidate Search Criteria: <textarea id="searchCriteria" name="searchCriteria"
                 style="display: block; width: 250; height: 90; background: rgb(236, 236, 236)"></textarea>
         </div>
-        <div style="display: block;">
+        <div style="display: block;" class="form-group">
             <input type="submit" value="Evaluate Candidate" style="background: rgb(236, 236, 236);">
         </div>
     </form>

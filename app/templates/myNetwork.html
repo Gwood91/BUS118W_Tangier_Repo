@@ -1,27 +1,40 @@
-{% extends "base.html" %} {% block app_content %}
+{% extends "base.html" %} 
+{% block content %}
+<div class="media">
+    <div class="media-left media-middle">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ9aGT0JLi7-nKbbvDl8raJV2kdmlSo4NUKIAZ5LKih5g2pGzSBQ" class="media-object" style="width:60px">
+    </div>
+    <div class="media-body">
+      <h2 class="media-heading">TANGIER</h2>
+      <!-- <i>Elevate your career!</i> -->
+      <i>The power of people!</i>
+      <br>
+      <i>Squeeze the most juice from your career!</i>
+    </div>
+  </div>
 <div>
     <h2>My Network</h2>
-    <div style="width: 700px; height: 500px; border: solid black 1px">
-        <div style="display: inline-flex">
-            <div style="width: 225px; height: 500px; background: rgb(226, 226, 226)">
+    <div class="form-group">
+        <divclass="form-group">
+            <div class="form-group">
                 <h3>Connections Query:</h3>
                 <form>
                     Search:<input>
                     <input type="submit" value="Search" style="float: right">
                 </form>
             </div>
-            <div style="width: 500; height: 250px;">
-                <div style="display: inline-block; width: 475; height: 350px; background: rgb(231, 231, 231);">
-                    <h3 style="padding-right:auto; padding-left:auto;">Search Results:</h3>
+            <div class="form-group">
+                <div class="form-group">
+                    <h3 >Search Results:</h3>
                     <hr>
-                    <div style="display: inline-block; width: 475; height: 280px; background: rgb(231, 231, 231); overflow: scroll; overflow-x: hidden">
+                    <div  class="form-group">
                         {% for i in range(query_listing)%}
                         <div>
-                            <div style="display:block;">
+                            <div class="form-group">
                                 <img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 50px; height: 50px;">
                                 <p style="text-align: center">Joe Blow "{{ i }}"</p>
                             </div>
-                            <button style="float: right">Send Invite</button>
+                            <button style="float: right" >Send Invite</button>
                             <button style="float: right">View Profile</button>
                             <br>
                             <hr>
@@ -29,11 +42,11 @@
                         {% endfor %}
                     </div>
                 </div>
-                <div style="display: inline-block; width: 475; height: 150px; background: orange">
+                <div style="background: orange" class="form-group">
                     <h3>Suggested Connections:</h3>
                     {% for i in range(query_listing)%}
-                    <div style="display:inline-block">
-                        <div style="display:block">
+                    <div style="display:inline-block" class="form-group">
+                        <div style="display:block" class="form-group">
                             <img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 50px; height: 50px;">
                             <br>
                             <p style="text-align: center">Joe Blow</p>

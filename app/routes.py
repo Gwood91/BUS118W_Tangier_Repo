@@ -72,6 +72,7 @@ def before_request():
 
 
 @app.route('/home', methods=['GET'])
+
 def home():
     return render_template('home.html', title='Home')
 
@@ -131,6 +132,7 @@ def profile():
 
 
 @app.route('/messagePage', methods=['GET', 'POST'])
+@oidc.require_login
 # @app.route('/send_message/<recipient>', methods=['GET', 'POST'])
 def messagePage():
     # Users = User.query.all()
@@ -140,19 +142,23 @@ def messagePage():
         if request.method == 'POST':
             # get the data supplied by the client and construct sanitzed queries in the db
             recipient_id = str(request.form.get("selectAUser", None))
+            print(recipient_id, file=sys.stderr)
             message_body = str(request.form.get("sendaDM", None))
-            user = db.session.query(User).filter_by(email=g.user.profile.email).first() 
-            # user = db.session.query(User).filter_by(username=recipient).first() 
-            new_message = Message(author=user, recipient_id=recipient_id, body=message_body)
-            # new_message = Message(sender_id=user, recipient_id=recipient_id, body=message_body)
+            user = db.session.query(User).filter_by(email=g.user.profile.email).first_or_404() 
+            # user = User.query.filter_by(username=Message.recipient_id).first_or_404()
+            # user = db.session.query(User).filter_by(username=recipient_id).first()
+            recipient_first_name, recipient_last_name = recipient_id.split(" ")
+            recipient_user = db.session.query(User).filter_by(first_name= recipient_first_name, last_name=recipient_last_name).first_or_404()
+            new_message = Message(sender_id=user.id, recipient_id=recipient_user.id, body=message_body)
             db.session.add(new_message)
             db.session.commit()
             # flash(_('Your message has been sent!'))
             # return redirect(url_for('messagePage'))
-            return render_template('messagePage.html', title='Direct Messaging')
+            return render_template('messagePage.html', title='Direct Messaging', get_users=get_users)
 
 
 @app.route('/jobs')
+@oidc.require_login
 def jobs():
     return render_template('jobs.html', title='Jobs')
 

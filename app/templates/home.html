@@ -1,3 +1,20 @@
-{% extends "base.html" %} {% import 'bootstrap/wtf.html' as wtf %} {% block app_content %}
-<p>This is the home page</p>
+{% extends "base.html" %} 
+<!-- {% import 'bootstrap/wtf.html' as wtf %}  -->
+{% block content %}
+<div class="media">
+    <div class="media-left media-middle">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ9aGT0JLi7-nKbbvDl8raJV2kdmlSo4NUKIAZ5LKih5g2pGzSBQ" class="media-object" style="width:60px">
+    </div>
+    <div class="media-body">
+      <h2 class="media-heading">TANGIER</h2>
+      <!-- <i>Elevate your career!</i> -->
+      <i>The power of people!</i>
+      <br>
+      <i>Squeeze the most juice from your career!</i>
+    </div>
+  </div>
+<p class="alert alert-primary">This is the home page</p>
+<div class="alert alert-primary" role="alert">
+  This is a primary alert—check it out!
+</div>
 {% endblock %}
