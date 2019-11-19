@@ -72,7 +72,6 @@ def before_request():
 
 
 @app.route('/home', methods=['GET'])
-
 def home():
     return render_template('home.html', title='Home')
 
@@ -144,11 +143,11 @@ def messagePage():
             recipient_id = str(request.form.get("selectAUser", None))
             print(recipient_id, file=sys.stderr)
             message_body = str(request.form.get("sendaDM", None))
-            user = db.session.query(User).filter_by(email=g.user.profile.email).first_or_404() 
+            user = db.session.query(User).filter_by(email=g.user.profile.email).first_or_404()
             # user = User.query.filter_by(username=Message.recipient_id).first_or_404()
             # user = db.session.query(User).filter_by(username=recipient_id).first()
             recipient_first_name, recipient_last_name = recipient_id.split(" ")
-            recipient_user = db.session.query(User).filter_by(first_name= recipient_first_name, last_name=recipient_last_name).first_or_404()
+            recipient_user = db.session.query(User).filter_by(first_name=recipient_first_name, last_name=recipient_last_name).first_or_404()
             new_message = Message(sender_id=user.id, recipient_id=recipient_user.id, body=message_body)
             db.session.add(new_message)
             db.session.commit()
@@ -256,15 +255,15 @@ def candidate_search():
         keywords = str(request.form.get("keywords", None))
         skills = str(request.form.get("skills", None))
         projectName = str(request.form.get("projectName", None))
+        keywords_search = "%{}%".format(keywords)
         skill_search = "%{}%".format(skills)
-        # query_results = db.session.query.filter(User_Profile.skills.like(skill_search)).all()
-        # query_results = db.session.query(User_Profile).filter_by(skills=skills).all()
+        # if field is not blank
         if skills != "":
-            query_results = db.session.query(User_Profile).\
-                filter(User_Profile.skills.contains(skill_search)).all()
+            query_results = db.session.query(User).\
+                filter(User.profile.user_bio.contains(keywords_search) or User.profile.experience.contains(keywords_search) or User.profile.skills.contains(skill_search)).all()
 
         results_len = len(query_results)
-        return render_template('recruiter_candidate_search.html', title='Candidate Search', results=query_results, results_len=results_len, i=5, user_projects=user_projects)
+        return render_template('recruiter_candidate_search.html', title='Candidate Search', results=query_results, results_len=results_len, current_user=current_user)
 
 
 @app.route('/newProject', methods=['GET', 'POST'])
