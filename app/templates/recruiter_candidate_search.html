@@ -28,8 +28,7 @@
                     <input id="skills" name="skills">
                     <!-- <input type="checkbox">Willing to Relocate -->
                     <br> Project Name:
-                    <select id="projectName" name="projectName">
-                         <option value="-">-</option>
+                    <select id="projectName" name="projectName" required>
                         {% for project in current_user.profile.recruiter_projects%}
                         <option value="{{project.title}}">{{project.title}}</option>
                         {% endfor %} 
@@ -48,11 +47,10 @@
                         {% for user in results%}
                         <div>
                             <div style="display:block;">
-                                <img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 50px; height: 50px;">
-                                <p style="text-align: center">"{{ user.id }}"</p>
+                                 <img src="data:image/png;base64,{{user.profile.profile_picture}}" style="width: 50px; height: 50px;  border-radius: 70%;">
+                                <p style="text-align: center">{{ user.first_name }} {{ user.last_name }}</p>
                             </div>
-                            <button style="float: right">Add to Project</button>
-                            <button style="float: right">View Profile</button>
+                            <a href="{{ url_for('view_candidate', username=user.username) }}"><button style="float: right">View Profile</button></a>
                             <br>
                             <hr>
                         </div>
