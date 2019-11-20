@@ -177,7 +177,11 @@ def my_network():
 @oidc.require_login
 def recruiter_page():
     current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
-    user_projects = db.session.query(Recruiter_Project).filter_by(user_id=current_user.id)
+    user_projects = db.session.query(Recruiter_Project).filter_by(user_id=current_user.id).all()
+    candidate_pool = []
+    for project in user_projects:
+        for candidate in project.candidates:
+            candidate_pool.append(db.session.query(User).filter_by(id=candidate.id).first())
     if request.method == 'GET':
         """HERE IS A SOMEWHAT PRIMATIVE METHOD OF GENERATING DASHBOARD VISUALS"""  # TODO: REFINE
         x = [1, 5, 6, 8, 9]  # sample x values, these will be derived from some query into the db
@@ -193,7 +197,7 @@ def recruiter_page():
             plt_a_base64 = "src=" + "data:image/png;base64,{}"
             plt_a_base64 = plt_a_base64.format(raw_base64[2:-1])  # format the base 64 string for html rendering
         """TODO: USE PLOTLY FOR THE GAUGE CHART/RADIAL GAUGE"""
-        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64, current_user=current_user)
+        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64, current_user=current_user, candidate_pool=candidate_pool)
     # if the recruiter client is evaluating the potential match of a candidate
     if request.method == 'POST':
         # get the input element with a given name from the posted from
@@ -205,7 +209,7 @@ def recruiter_page():
         # summary_match = ratio(candidate_summary, search_criteria)
         current_cand_analysis = "Candidate Match: " + str(candidate_match)
         # current_cand_analysis = "Candidate Match: " + str(candidate_match) + "%\n" + "Summary Match: " + str(summary_match) + "%"
-        return render_template('recruiter_page.html', title='Recruiter', current_user=current_user, candidate_analysis=current_cand_analysis)
+        return render_template('recruiter_page.html', title='Recruiter', current_user=current_user, candidate_analysis=current_cand_analysis, candidate_pool=candidate_pool)
 
 
 @app.route('/recruiter/view/<project_id>', methods=['GET', 'POST'])  # view/edit a given project
