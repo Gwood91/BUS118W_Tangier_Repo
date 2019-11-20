@@ -133,7 +133,6 @@ def profile():
 
 @app.route('/messagePage', methods=['GET', 'POST'])
 @oidc.require_login
-# @app.route('/send_message/<recipient>', methods=['GET', 'POST'])
 def messagePage():
     # Users = User.query.all()
         get_users = User.query.all()
@@ -156,6 +155,25 @@ def messagePage():
             # return redirect(url_for('messagePage'))
             return render_template('messagePage.html', title='Direct Messaging', get_users=get_users)
 
+@app.route('/send_message/<recipient>', methods=['GET', 'POST'])
+@oidc.require_login
+def message_inbox():
+    if request.method == 'GET':
+        return render_template('messagePage.html', title='Inbox')
+    if request.method == 'POST':
+        User.id.last_message_read_time = datetime.utcnow()
+        db.session.commit()
+        page = request.args.get('page', 1, type=int)
+        messages = user.id.messages_received.order_by(
+        Message.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False)
+        next_url = url_for('main.messages', page=messages.next_num) \
+        if messages.has_next else None
+        prev_url = url_for('main.messages', page=messages.prev_num) \
+        if messages.has_prev else None
+        return render_template('messages.html', messages=messages.items,
+                           next_url=next_url, prev_url=prev_url)
+        
 
 @app.route('/jobs')
 @oidc.require_login
