@@ -29,9 +29,9 @@
     </form>
     <p style="font-size:14px;color:black;display: inline-block;">Welcome</p>
     {% else %}
-    <form class="navbar-form navbar-right" action="{{ url_for('login_handler') }}" method="post" enctype="multipart/form-data">
+    <form class="navbar-form navbar-right" action="{{ url_for('logout_handler') }}" method="post" enctype="multipart/form-data">
       <div class="form-group">
-        <button class="btn btn-default" name="login" type="submit" value="Log In/Register">
+        <button class="btn btn-default" name="login" type="submit" value="Logout" >
             <span class="glyphicon glyphicon-user"></span> Logout
           </button>
       </div>

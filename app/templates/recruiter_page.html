@@ -33,7 +33,7 @@
             <p style="margin-top: 10px">Candidate Pool</p>
             <div class="form-group">
                 <div style="display: inline-flex; border: black 1px solid; width: 245px; height: 65%; background: rgb(236, 236, 236); padding-right: auto; padding-left: auto; overflow: scroll; overflow-y: hidden" class="form-group">
-                    {% if current_user.profile.recruiter_projects.candidates is not none %}
+                    {% if candidate_pool is not none %}
                     {% for candidate in candidate_pool%}
                     <div style="display:inline-block" class="form-group">
                         <div style="display:block" class="form-group">

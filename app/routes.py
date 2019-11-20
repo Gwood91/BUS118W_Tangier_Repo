@@ -195,12 +195,12 @@ def my_network():
 @oidc.require_login
 def recruiter_page():
     current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
-    user_projects = db.session.query(Recruiter_Project).filter_by(user_id=current_user.id).all()
-    candidate_pool = []
-    for project in user_projects:
-        for candidate in project.candidates:
-            candidate_pool.append(db.session.query(User).filter_by(id=candidate.id).first())
     if request.method == 'GET':
+        user_projects = db.session.query(Recruiter_Project).filter_by(user_id=current_user.id).all()
+        candidate_pool = []
+        for project in user_projects:
+            for candidate in project.candidates:
+                candidate_pool.append(db.session.query(User).filter_by(id=candidate.id).first())
         """HERE IS A SOMEWHAT PRIMATIVE METHOD OF GENERATING DASHBOARD VISUALS"""  # TODO: REFINE
         x = [1, 5, 6, 8, 9]  # sample x values, these will be derived from some query into the db
         y = [12, 16, 11, 17, 22]  # sample y values, these will be derived from some query into the db
@@ -321,9 +321,8 @@ def view_candidate(username):
 @oidc.require_login
 def add_candidate(username, project_id):
     if request.method == 'GET':
-        current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
         candidate = db.session.query(User).filter_by(username=username).first()
-        project_canidate = Project_Candidate(user_id=current_user.id, project_id=project_id)
+        project_canidate = Project_Candidate(user_id=candidate.id, project_id=project_id)
         # add user to project
         db.session.add(project_canidate)
         db.session.commit()
