@@ -24,6 +24,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from io import StringIO
 from flask_wtf import FlaskForm
+from sqlalchemy import or_
 
 """TODO: Probably gonna need to change the double directory change here, need to consolidate"""
 # change the directory to current user
@@ -72,7 +73,6 @@ def before_request():
 
 
 @app.route('/home', methods=['GET'])
-
 def home():
     return render_template('home.html', title='Home')
 
@@ -143,11 +143,11 @@ def messagePage():
             recipient_id = str(request.form.get("selectAUser", None))
             print(recipient_id, file=sys.stderr)
             message_body = str(request.form.get("sendaDM", None))
-            user = db.session.query(User).filter_by(email=g.user.profile.email).first_or_404() 
+            user = db.session.query(User).filter_by(email=g.user.profile.email).first_or_404()
             # user = User.query.filter_by(username=Message.recipient_id).first_or_404()
             # user = db.session.query(User).filter_by(username=recipient_id).first()
             recipient_first_name, recipient_last_name = recipient_id.split(" ")
-            recipient_user = db.session.query(User).filter_by(first_name= recipient_first_name, last_name=recipient_last_name).first_or_404()
+            recipient_user = db.session.query(User).filter_by(first_name=recipient_first_name, last_name=recipient_last_name).first_or_404()
             new_message = Message(sender_id=user.id, recipient_id=recipient_user.id, body=message_body)
             db.session.add(new_message)
             db.session.commit()
@@ -195,7 +195,11 @@ def my_network():
 @oidc.require_login
 def recruiter_page():
     current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
-    user_projects = db.session.query(Recruiter_Project).filter_by(user_id=current_user.id)
+    user_projects = db.session.query(Recruiter_Project).filter_by(user_id=current_user.id).all()
+    candidate_pool = []
+    for project in user_projects:
+        for candidate in project.candidates:
+            candidate_pool.append(db.session.query(User).filter_by(id=candidate.id).first())
     if request.method == 'GET':
         """HERE IS A SOMEWHAT PRIMATIVE METHOD OF GENERATING DASHBOARD VISUALS"""  # TODO: REFINE
         x = [1, 5, 6, 8, 9]  # sample x values, these will be derived from some query into the db
@@ -211,7 +215,7 @@ def recruiter_page():
             plt_a_base64 = "src=" + "data:image/png;base64,{}"
             plt_a_base64 = plt_a_base64.format(raw_base64[2:-1])  # format the base 64 string for html rendering
         """TODO: USE PLOTLY FOR THE GAUGE CHART/RADIAL GAUGE"""
-        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64, current_user=current_user)
+        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64, current_user=current_user, candidate_pool=candidate_pool)
     # if the recruiter client is evaluating the potential match of a candidate
     if request.method == 'POST':
         # get the input element with a given name from the posted from
@@ -223,15 +227,18 @@ def recruiter_page():
         # summary_match = ratio(candidate_summary, search_criteria)
         current_cand_analysis = "Candidate Match: " + str(candidate_match)
         # current_cand_analysis = "Candidate Match: " + str(candidate_match) + "%\n" + "Summary Match: " + str(summary_match) + "%"
-        return render_template('recruiter_page.html', title='Recruiter', current_user=current_user, candidate_analysis=current_cand_analysis)
+        return render_template('recruiter_page.html', title='Recruiter', current_user=current_user, candidate_analysis=current_cand_analysis, candidate_pool=candidate_pool)
 
 
 @app.route('/recruiter/view/<project_id>', methods=['GET', 'POST'])  # view/edit a given project
 @oidc.require_login
 def view_project(project_id):
     project = db.session.query(Recruiter_Project).filter_by(id=project_id).first_or_404()
-    candidate_pool = 15  # TODO: SET UP RELATIONSHIP WHEREBY EXISTS AN ASSOCIATION BETWEEN PROEJECTS AND USERS IN THE TALENT POOL
     if request.method == 'GET':
+        candidate_pool = []
+        # fetch the user objects for profiles in search query
+        for candidate in project.candidates:
+            candidate_pool.append(db.session.query(User).filter_by(id=candidate.id).first())
         return render_template('recruiter_view_edit_project.html', title=project.title, project=project, candidate_pool=candidate_pool)
     if request.method == 'POST':
         # get the data supplied by the client and construct sanitzed queries in the db
@@ -260,12 +267,13 @@ def remove_project(project_id):
 @app.route('/candidate_search', methods=['GET', 'POST'])
 @oidc.require_login
 def candidate_search():
+    i = 5
     query_results = []
     current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
     user_projects = db.session.query(Recruiter_Project).filter_by(user_id=current_user.id).all()
     results_len = len(query_results)
     if request.method == 'GET':
-        return render_template('recruiter_candidate_search.html', title='Candidate Search', results=query_results, results_len=results_len, i=5, user_projects=user_projects)
+        return render_template('recruiter_candidate_search.html', title='Candidate Search', results=query_results, results_len=results_len, i=5, current_user=current_user)
     # if the recruiter client is evaluating the potential match of a candidate
     if request.method == 'POST':
         # get the data supplied by the client and construct sanitzed queries in the db
@@ -273,16 +281,53 @@ def candidate_search():
         industry = str(request.form.get("industry", None))
         keywords = str(request.form.get("keywords", None))
         skills = str(request.form.get("skills", None))
-        projectName = str(request.form.get("projectName", None))
+        project_name = str(request.form.get("projectName", None))
+        keywords_search = "%{}%".format(keywords)
         skill_search = "%{}%".format(skills)
-        # query_results = db.session.query.filter(User_Profile.skills.like(skill_search)).all()
-        # query_results = db.session.query(User_Profile).filter_by(skills=skills).all()
-        if skills != "":
-            query_results = db.session.query(User_Profile).\
-                filter(User_Profile.skills.contains(skill_search)).all()
+        # if field is not blank
+        if skills != "" or keywords != "":
+            # or filter based on user input
+            if keywords != "" and skills != "":
+                query_profiles = db.session.query(User_Profile).\
+                    filter(or_(User_Profile.user_bio.contains(keywords_search), User_Profile.experience.contains(keywords_search), User_Profile.skills.contains(keywords_search))).all()
+            elif skills != "":
+                query_profiles = db.session.query(User_Profile).filter(User_Profile.skills.contains(skill_search)).all()
+            elif keywords != "":
+                query_profiles = db.session.query(User_Profile).filter(User_Profile.experience.contains(keywords)).all()
+            query_results = []
+            # fetch the user objects for profiles in search query
+            if query_profiles is not None:
+                for profile in query_profiles:
+                    query_results.append(db.session.query(User).filter_by(id=profile.id).first())
+            results_len = len(query_results)
+        return render_template('recruiter_candidate_search.html', title='Candidate Search', results=query_results, results_len=results_len, current_user=current_user, i=i)
 
-        results_len = len(query_results)
-        return render_template('recruiter_candidate_search.html', title='Candidate Search', results=query_results, results_len=results_len, i=5, user_projects=user_projects)
+
+@app.route('/view_candiate/<username>', methods=['GET', 'POST'])
+@oidc.require_login
+def view_candidate(username):
+    current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+    current_candiate = db.session.query(User).filter_by(username=username).first()
+    candidate_fullname = current_candiate.first_name + " " + current_candiate.last_name
+    if request.method == 'GET':
+        return render_template('candidate_profile.html', title=candidate_fullname, current_candiate=current_candiate, current_user=current_user)
+    if request.method == 'POST':
+        project_name = str(request.form.get("projectName", None))
+        project_id = db.session.query(Recruiter_Project).filter_by(title=project_name, user_id=current_user.id).first().id
+        return redirect(url_for('add_candidate', username=username, project_id=project_id))
+
+
+@app.route('/recruiter/<project_id>/add/<username>', methods=['GET'])
+@oidc.require_login
+def add_candidate(username, project_id):
+    if request.method == 'GET':
+        current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+        candidate = db.session.query(User).filter_by(username=username).first()
+        project_canidate = Project_Candidate(user_id=current_user.id, project_id=project_id)
+        # add user to project
+        db.session.add(project_canidate)
+        db.session.commit()
+        return redirect(url_for('recruiter_page'))
 
 
 @app.route('/newProject', methods=['GET', 'POST'])

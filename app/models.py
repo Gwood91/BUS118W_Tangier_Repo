@@ -14,11 +14,14 @@ os.chdir(local_path)
 """an import and noteworthy distinction here is that we are importing a module named app not an object such as declared in __init__"""
 from app import db, app
 
+
 def init_db():
     with app.app_context():
         db.create_all()
 
 # The Post class are blog posts written by Users
+
+
 class Post(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
@@ -52,7 +55,6 @@ class Message(db.Model):
         db.session.query(Message).filter_by(id=id, unread=True)
 
 
-
 class Recruiter_Project(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
@@ -75,8 +77,8 @@ class Recruiter_Project(db.Model):
     # determine if a given user is included within the talent pool
 
     def is_talent(self, user):
-        return self.talent_pool.filter(
-            talent_pool_table.c.user_id == user.id).count() > 0
+        return self.candidates.filter(
+            candidates.c.user_id == user.id).count() > 0
 
     def add_talent(self, user):
         # validate logic and connect users
@@ -96,6 +98,7 @@ class Recruiter_Project(db.Model):
         # remove self from recruiter projects table
         db.session.delete(self)
 
+
 class Project_Candidate(db.Model):
     __tablename__ = 'Project_Candidate'
     __table_args__ = {'extend_existing': True}
@@ -103,6 +106,7 @@ class Project_Candidate(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     project_id = db.Column('project_id', db.Integer, db.ForeignKey('recruiter__project.id'))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
 
 class User_Profile(db.Model):
     # __tablename__ = "user_profile"
@@ -129,6 +133,7 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
+
 
 # initialize the database
 init_db()

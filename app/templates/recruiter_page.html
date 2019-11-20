@@ -34,12 +34,12 @@
             <div class="form-group">
                 <div style="display: inline-flex; border: black 1px solid; width: 245px; height: 65%; background: rgb(236, 236, 236); padding-right: auto; padding-left: auto; overflow: scroll; overflow-y: hidden" class="form-group">
                     {% if current_user.profile.recruiter_projects.candidates is not none %}
-                    {% for candidate in current_user.profile.recruiter_projects.candidates%}
+                    {% for candidate in candidate_pool%}
                     <div style="display:inline-block" class="form-group">
                         <div style="display:block" class="form-group">
-                            <img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 50px; height: 50px;">
+                            <img src="data:image/png;base64, {{ candidate.profile.profile_picture }}" style="width: 50px; height: 50px; border-radius: 70%;">
                             <br>
-                            <p style="text-align: center">{{candidate.user_id}}</p>
+                            <p style="text-align: center">{{candidate.first_name}} {{candidate.last_name}}</p>
                         </div>
                     </div>
                     {% endfor %}
