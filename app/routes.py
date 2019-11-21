@@ -2,6 +2,7 @@
 import sys
 import os
 import base64
+from datetime import datetime
 # define the path for the current user
 current_user = user_root = os.path.expanduser('~')
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/app/"
@@ -155,6 +156,7 @@ def messagePage():
             # return redirect(url_for('messagePage'))
             return render_template('messagePage.html', title='Direct Messaging', get_users=get_users)
 
+
 @app.route('/send_message/<recipient>', methods=['GET', 'POST'])
 @oidc.require_login
 def message_inbox():
@@ -165,15 +167,15 @@ def message_inbox():
         db.session.commit()
         page = request.args.get('page', 1, type=int)
         messages = user.id.messages_received.order_by(
-        Message.timestamp.desc()).paginate(
+            Message.timestamp.desc()).paginate(
             page, current_app.config['POSTS_PER_PAGE'], False)
         next_url = url_for('main.messages', page=messages.next_num) \
-        if messages.has_next else None
+            if messages.has_next else None
         prev_url = url_for('main.messages', page=messages.prev_num) \
-        if messages.has_prev else None
+            if messages.has_prev else None
         return render_template('messages.html', messages=messages.items,
-                           next_url=next_url, prev_url=prev_url)
-        
+                               next_url=next_url, prev_url=prev_url)
+
 
 @app.route('/jobs')
 @oidc.require_login
@@ -198,16 +200,23 @@ def recruiter_page():
     if request.method == 'GET':
         user_projects = db.session.query(Recruiter_Project).filter_by(user_id=current_user.id).all()
         candidate_pool = []
+        candidate_dataset = []
+        # get the candidates from each recruiter project a
         for project in user_projects:
             for candidate in project.candidates:
-                candidate_pool.append(db.session.query(User).filter_by(id=candidate.id).first())
+                candidate_dataset.append(candidate)  # dataset for data science
+                candidate_pool.append(db.session.query(User).filter_by(id=candidate.id).first())  # retrieve user objects for canidates
         """HERE IS A SOMEWHAT PRIMATIVE METHOD OF GENERATING DASHBOARD VISUALS"""  # TODO: REFINE
-        x = [1, 5, 6, 8, 9]  # sample x values, these will be derived from some query into the db
-        y = [12, 16, 11, 17, 22]  # sample y values, these will be derived from some query into the db
+        timestamp_data = []
+        cand_count_data = []
+        for candidate in candidate_dataset:
+            timestamp_data.append(str(candidate.timestamp).split(":")[0])
+            cand_count_data.append(len(timestamp_data))
         plt.style.use('dark_background')  # change the color theme
         fig, ax = plt.subplots()
         ax.set_title("Recruiter Activity")  # set the axis title
-        ax.plot(x, y)  # create the plot
+        # ax.plot(timestamp_data, cand_count_data)  # create the plot
+        ax.fill_between(timestamp_data, cand_count_data)
         ax.grid("on")
         img = plt.savefig("plt_img", format='png')  # save the plot as base64 string
         with open("plt_img", "rb") as img_file:

@@ -13,10 +13,9 @@ current_user = os.path.expanduser('~')
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
 local_engine_path = "sqlite:////" + local_path + 'app/app.db'
 engine = create_engine(local_engine_path)
-STATIC_DIR = local_path + "/app/static/styles/styleFile"
 
 
-app = Flask(__name__, static_folder=STATIC_DIR)
+app = Flask(__name__)
 
 app.config.from_object(Config)
 app.config['SQLALCHEMY_DATABASE_URI'] = local_engine_path
