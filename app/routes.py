@@ -249,11 +249,11 @@ def recruiter_page():
 @oidc.require_login
 def view_project(project_id):
     project = db.session.query(Recruiter_Project).filter_by(id=project_id).first_or_404()
+    candidate_pool = []
+    # fetch the user objects for profiles in search query
+    for candidate in project.candidates:
+        candidate_pool.append(db.session.query(User).filter_by(id=candidate.id).first())
     if request.method == 'GET':
-        candidate_pool = []
-        # fetch the user objects for profiles in search query
-        for candidate in project.candidates:
-            candidate_pool.append(db.session.query(User).filter_by(id=candidate.id).first())
         return render_template('recruiter_view_edit_project.html', title=project.title, project=project, candidate_pool=candidate_pool)
     if request.method == 'POST':
         # get the data supplied by the client and construct sanitzed queries in the db
@@ -274,6 +274,8 @@ def view_project(project_id):
 @oidc.require_login
 def remove_project(project_id):
     project = db.session.query(Recruiter_Project).filter_by(id=project_id).first_or_404()
+    candidates = db.session.query(Project_Candidate).filter_by(project_id=project_id).first_or_404()
+    db.session.delete(candidates)
     db.session.delete(project)
     db.session.commit()
     return redirect(url_for('recruiter_page'))
