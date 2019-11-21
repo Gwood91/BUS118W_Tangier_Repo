@@ -209,9 +209,15 @@ def recruiter_page():
         """HERE IS A SOMEWHAT PRIMATIVE METHOD OF GENERATING DASHBOARD VISUALS"""  # TODO: REFINE
         timestamp_data = []
         cand_count_data = []
+        """Need to fix the dates and get a count by datetime to the hour"""
         for candidate in candidate_dataset:
-            timestamp_data.append(str(candidate.timestamp).split(":")[0])
-            cand_count_data.append(len(timestamp_data))
+            format_time = str(candidate.timestamp).split(":")[0]
+            timestamp_data.append(format_time)
+            time_count = 0
+            for time in timestamp_data:
+                if time == format_time:
+                    time_count += 1
+            cand_count_data.append(time_count)
         plt.style.use('dark_background')  # change the color theme
         fig, ax = plt.subplots()
         ax.set_title("Recruiter Activity")  # set the axis title
