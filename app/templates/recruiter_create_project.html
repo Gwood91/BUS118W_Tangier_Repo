@@ -1,6 +1,6 @@
  {% extends "base.html" %} 
  {% block content %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">-->
 
 <div>
     <div style="width: 500px" class="container">
@@ -10,11 +10,13 @@
         <h4>Description:</h4>
         <div >
             <form method="POST">
-                Project Title:<input id="projectTitle" name="projectTitle" type="search">
+                Project Title:
+                <br>
+                <input id="projectTitle" name="projectTitle" type="search">
                 <br>
                 Project Description:
                 <br>
-                <textarea id="projectDescription" name="projectDescription" style="resize: none; height: 100; width: 250"></textarea>
+                <textarea id="projectDescription" name="projectDescription" style="resize: none; height: 75px; width: 350px;"></textarea>
                 <br>
                 <input type="submit" value="Create" class="btn btn-primary">
             </form>

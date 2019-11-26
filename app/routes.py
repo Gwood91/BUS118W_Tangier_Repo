@@ -205,19 +205,21 @@ def recruiter_page():
         for project in user_projects:
             for candidate in project.candidates:
                 candidate_dataset.append(candidate)  # dataset for data science
-                candidate_pool.append(db.session.query(User).filter_by(id=candidate.id).first())  # retrieve user objects for canidates
+                candidate_pool.append(db.session.query(User).filter_by(id=candidate.user_id).first())  # retrieve user objects for canidates
         """HERE IS A SOMEWHAT PRIMATIVE METHOD OF GENERATING DASHBOARD VISUALS"""  # TODO: REFINE
         timestamp_data = []
         cand_count_data = []
         """Need to fix the dates and get a count by datetime to the hour"""
         for candidate in candidate_dataset:
-            format_time = str(candidate.timestamp).split(":")[0]
+            format_time = str(candidate.timestamp).split(" ")[0]
             timestamp_data.append(format_time)
             time_count = 0
             for time in timestamp_data:
                 if time == format_time:
                     time_count += 1
             cand_count_data.append(time_count)
+        cand_count_data.append(0)
+        timestamp_data.append(0)
         plt.style.use('dark_background')  # change the color theme
         fig, ax = plt.subplots()
         ax.set_title("Recruiter Activity")  # set the axis title
@@ -252,7 +254,7 @@ def view_project(project_id):
     candidate_pool = []
     # fetch the user objects for profiles in search query
     for candidate in project.candidates:
-        candidate_pool.append(db.session.query(User).filter_by(id=candidate.id).first())
+        candidate_pool.append(db.session.query(User).filter_by(id=candidate.user_id).first())
     if request.method == 'GET':
         return render_template('recruiter_view_edit_project.html', title=project.title, project=project, candidate_pool=candidate_pool)
     if request.method == 'POST':
