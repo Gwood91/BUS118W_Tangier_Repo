@@ -341,8 +341,9 @@ def add_candidate(username, project_id):
         candidate = db.session.query(User).filter_by(username=username).first()
         project_canidate = Project_Candidate(user_id=candidate.id, project_id=project_id)
         # add user to project
-        db.session.add(project_canidate)
-        db.session.commit()
+        if project_id is not None:
+            db.session.add(project_canidate)
+            db.session.commit()
         return redirect(url_for('recruiter_page'))
 
 
