@@ -68,6 +68,11 @@
                 </div>
                 <div style="display: inline-block; width: 225px; height: 125px; background: orange"class="form-group">
                     <img src="https://previews.123rf.com/images/icedesign/icedesign1510/icedesign151000003/46727034-abstract-car-speedometer-background-vector.jpg" style="width: 225; height: 125; text-align: center;  border: none; display: block;" class="img-fluid">
+                        <select id="projectName" name="projectName" required>
+                        {% for project in current_user.profile.recruiter_projects%}
+                        <option value="{{project.title}}">{{project.title}}</option>
+                        {% endfor %} 
+                      </select>
                 </div>
             </div>
         </div>
