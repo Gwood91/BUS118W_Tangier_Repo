@@ -30,6 +30,7 @@ from sqlalchemy import or_
 import plotly.graph_objs as go
 import plotly
 import json
+from itertools import groupby
 
 """TODO: Probably gonna need to change the double directory change here, need to consolidate"""
 # change the directory to current user
@@ -71,11 +72,9 @@ def before_request():
             db.session.add(new_user)
             db.session.commit()
         user_client = user
-        current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
 
     else:
         g.user = None
-        current_user = None
 # define the routes
 
 
@@ -219,23 +218,30 @@ def recruiter_page():
                 candidate_pool.append(db.session.query(User).filter_by(id=candidate.user_id).first())  # retrieve user objects for canidates
         """HERE IS A SOMEWHAT PRIMATIVE METHOD OF GENERATING DASHBOARD VISUALS"""  # TODO: REFINE
         timestamp_data = []
-        cand_count_data = []
+        cand_count_data = [0]
         """Need to fix the dates and get a count by datetime to the hour"""
         for candidate in candidate_dataset:
             format_time = str(candidate.timestamp).split(" ")[0]
             timestamp_data.append(format_time)
-            time_count = 0
-            for time in timestamp_data:
-                if time == format_time:
-                    time_count += 1
-            cand_count_data.append(time_count)
-        cand_count_data = [0] + cand_count_data
+        time_count = 0
+        for time in timestamp_data:
+            if time == format_time:
+                time_count += 1
+        # get canidate count by datetime
+        cand_count_data = [0] + [len(list(group)) for key, group in groupby(timestamp_data)]
+        # cand_count_data.append(time_count)
         timestamp_data = ["Dawn of Time"] + timestamp_data
+        timestamp_unique = []
+        for time_stamp in timestamp_data:
+                # check if exists in unique_list or not
+                if time_stamp not in timestamp_unique:
+                    timestamp_unique.append(time_stamp)
         plt.style.use('dark_background')  # change the color theme
         fig, ax = plt.subplots()
         ax.set_title("Recruiter Activity")  # set the axis title
         # ax.plot(timestamp_data, cand_count_data)  # create the plot
-        ax.fill_between(timestamp_data, cand_count_data)
+        ax.fill_between(timestamp_unique, cand_count_data)
+        print(cand_count_data, timestamp_unique, file=sys.stderr)
         ax.grid("on")
         img = plt.savefig("plt_img", format='png')  # save the plot as base64 string
         with open("plt_img", "rb") as img_file:

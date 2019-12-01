@@ -39,7 +39,7 @@
                                  <img src="data:image/png;base64,{{user.profile.profile_picture}}" style="width: 50px; height: 50px;  border-radius: 70%;">
                                 <p style="text-align: center">{{ user.first_name }} {{ user.last_name }}</p>
                             </div>
-                            <a href="{{ url_for('view_candidate', username=user.username) }}"><button style="float: right">View Profile</button></a>
+                            <a href="{{ url_for('view_candidate', username=user.username) }}"><button style="float: right" class="btn btn-primary">View Profile</button></a>
                             <br>
                             <hr>
                         </div>
