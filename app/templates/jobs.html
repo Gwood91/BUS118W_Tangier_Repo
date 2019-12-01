@@ -1,16 +1,56 @@
-{% extends "base.html" %} 
-{% block content %}
-<div class="media">
-    <div class="media-left media-middle">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ9aGT0JLi7-nKbbvDl8raJV2kdmlSo4NUKIAZ5LKih5g2pGzSBQ" class="media-object" style="width:60px">
+ {% extends "base.html" %} 
+ {% block content %}
+
+<div>
+    <h2>Career Search</h2>
+    <div style="width: 755px; height: 500px; border: solid black 1px">
+        <div style="display: inline-flex">
+            <div style="width: 50%; height: 500px; background: rgb(226, 226, 226)">
+                <h3>Find a Job:</h3>
+                <form method="POST">
+                    <div style="text-align:center;">
+                            <table>
+                                    <tbody>
+                                        <tr><td><label for="name">City:</label></td><td><input id="name" type="name"></td></tr>
+                                        <tr><td><label for="state">State:</label></td><td><input id="state" type = "text"></td></tr>
+                                        <tr><td><label for="jobTitle">Title:</label></td><td><input id="jobTitle" type = "text"></td></tr>
+                                        <tr><td><label for="keywords">Keywords:</label></td><td><input id="keywords" type = "text"></td></tr>
+                                        <tr><td><label for="skills">Skills:</label></td><td><input id="skills" type = "text"></td></tr>
+                                    </tbody>
+                                </table>
+                    </div>
+                    <br>
+                    <input type="submit" value="Search" style="float: right" class="btn btn-primary">
+                </form>
+            </div>
+            <div style="width: 500; height: 250px;">
+                <div style="display: inline-block; width: 475; height: 350px; background: rgb(231, 231, 231);">
+                    <h3 style="padding-right:auto; padding-left:auto;">Search Results:</h3>
+                    <hr>
+                    <div style="display: inline-block; width: 475; height: 280px; background: rgb(231, 231, 231); overflow: scroll; overflow-x: hidden">
+                        {% if results_len != 0 %} 
+                        {% for user in results%}
+                        <div>
+                            <div style="display:block;">
+                                 <img src="data:image/png;base64,{{user.profile.profile_picture}}" style="width: 50px; height: 50px;  border-radius: 70%;">
+                                <p style="text-align: center">{{ user.first_name }} {{ user.last_name }}</p>
+                            </div>
+                            <a href="{{ url_for('view_candidate', username=user.username) }}"><button style="float: right">View Profile</button></a>
+                            <br>
+                            <hr>
+                        </div>
+                        {% endfor %} {% else %}
+                        <div>
+                            <p>No Results to Display</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div style="display: inline-block; width: 475; height: 150px; background: orange">
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="media-body">
-      <h2 class="media-heading">TANGIER</h2>
-      <!-- <i>Elevate your career!</i> -->
-      <i>The power of people!</i>
-      <br>
-      <i>Squeeze the most juice from your career!</i>
-    </div>
-  </div>
-<p>This is the jobs page</p>
-{% endblock %}
+</div>
+<br>
+<br> {% endblock %}

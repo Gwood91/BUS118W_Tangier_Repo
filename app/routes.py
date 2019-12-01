@@ -2,6 +2,7 @@
 import sys
 import os
 import base64
+from datetime import datetime
 # define the path for the current user
 current_user = user_root = os.path.expanduser('~')
 local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/app/"
@@ -25,6 +26,11 @@ import matplotlib.pyplot as plt
 from io import StringIO
 from flask_wtf import FlaskForm
 from sqlalchemy import or_
+# may need to update plotly/ pip install ipywidgets
+import plotly.graph_objs as go
+import plotly
+import json
+from itertools import groupby
 
 """TODO: Probably gonna need to change the double directory change here, need to consolidate"""
 # change the directory to current user
@@ -74,7 +80,10 @@ def before_request():
 
 @app.route('/home', methods=['GET'])
 def home():
-    return render_template('home.html', title='Home')
+    # dummy items for mock up purposes
+    news_stories = ['test_article', 'test_article', 'test_article', 'test_article', 'test_article', 'test_article', 'test_article']
+    news_feed = ['post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post']
+    return render_template('home.html', title='Home', news_stories=news_stories, news_feed=news_feed)
 
 
 @app.route('/home', methods=['Post'])
@@ -155,7 +164,8 @@ def messagePage():
             # return redirect(url_for('messagePage'))
             return render_template('messagePage.html', title='Direct Messaging', get_users=get_users)
 
-@app.route('/messagePage/<recipient>', methods=['GET', 'POST'])
+
+@app.route('/send_message/<recipient>', methods=['GET', 'POST'])
 @oidc.require_login
 def message_inbox():
     if request.method == 'GET':
@@ -165,20 +175,22 @@ def message_inbox():
         db.session.commit()
         page = request.args.get('page', 1, type=int)
         messages = user.id.messages_received.order_by(
-        Message.timestamp.desc()).paginate(
+            Message.timestamp.desc()).paginate(
             page, current_app.config['POSTS_PER_PAGE'], False)
         next_url = url_for('main.messages', page=messages.next_num) \
-        if messages.has_next else None
+            if messages.has_next else None
         prev_url = url_for('main.messages', page=messages.prev_num) \
-        if messages.has_prev else None
+            if messages.has_prev else None
         return render_template('messages.html', messages=messages.items,
-                           next_url=next_url, prev_url=prev_url)
-        
+                               next_url=next_url, prev_url=prev_url)
+
 
 @app.route('/jobs')
 @oidc.require_login
 def jobs():
-    return render_template('jobs.html', title='Jobs')
+    current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+    i = 5
+    return render_template('jobs.html', title='Jobs', current_user=current_user, i=i)
 
 
 @app.route('/myNetwork')
@@ -195,27 +207,65 @@ def my_network():
 @oidc.require_login
 def recruiter_page():
     current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
-    user_projects = db.session.query(Recruiter_Project).filter_by(user_id=current_user.id).all()
-    candidate_pool = []
-    for project in user_projects:
-        for candidate in project.candidates:
-            candidate_pool.append(db.session.query(User).filter_by(id=candidate.id).first())
     if request.method == 'GET':
+        user_projects = db.session.query(Recruiter_Project).filter_by(user_id=current_user.id).all()
+        candidate_pool = []
+        candidate_dataset = []
+        # get the candidates from each recruiter project a
+        for project in user_projects:
+            for candidate in project.candidates:
+                candidate_dataset.append(candidate)  # dataset for data science
+                candidate_pool.append(db.session.query(User).filter_by(id=candidate.user_id).first())  # retrieve user objects for canidates
         """HERE IS A SOMEWHAT PRIMATIVE METHOD OF GENERATING DASHBOARD VISUALS"""  # TODO: REFINE
-        x = [1, 5, 6, 8, 9]  # sample x values, these will be derived from some query into the db
-        y = [12, 16, 11, 17, 22]  # sample y values, these will be derived from some query into the db
+        timestamp_data = []
+        cand_count_data = [0]
+        """Need to fix the dates and get a count by datetime to the hour"""
+        for candidate in candidate_dataset:
+            format_time = str(candidate.timestamp).split(" ")[0]
+            timestamp_data.append(format_time)
+        time_count = 0
+        for time in timestamp_data:
+            if time == format_time:
+                time_count += 1
+        # get canidate count by datetime
+        cand_count_data = [0] + [len(list(group)) for key, group in groupby(timestamp_data)]
+        # cand_count_data.append(time_count)
+        timestamp_data = ["Dawn of Time"] + timestamp_data
+        timestamp_unique = []
+        for time_stamp in timestamp_data:
+                # check if exists in unique_list or not
+                if time_stamp not in timestamp_unique:
+                    timestamp_unique.append(time_stamp)
         plt.style.use('dark_background')  # change the color theme
         fig, ax = plt.subplots()
         ax.set_title("Recruiter Activity")  # set the axis title
-        ax.plot(x, y)  # create the plot
+        # ax.plot(timestamp_data, cand_count_data)  # create the plot
+        ax.fill_between(timestamp_unique, cand_count_data)
+        print(cand_count_data, timestamp_unique, file=sys.stderr)
         ax.grid("on")
         img = plt.savefig("plt_img", format='png')  # save the plot as base64 string
         with open("plt_img", "rb") as img_file:
             raw_base64 = str(base64.b64encode(img_file.read()))
             plt_a_base64 = "src=" + "data:image/png;base64,{}"
             plt_a_base64 = plt_a_base64.format(raw_base64[2:-1])  # format the base 64 string for html rendering
-        """TODO: USE PLOTLY FOR THE GAUGE CHART/RADIAL GAUGE"""
-        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64, current_user=current_user, candidate_pool=candidate_pool)
+        """GAUGE CHART/RADIAL GAUGE"""
+        radial_plot = go.Figure(go.Indicator(
+            domain={'x': [0, 1], 'y': [0, 1]},
+            value=cand_count_data[-1],
+            mode="gauge+number+delta",
+            title={'text': "Recruiter Activity"},
+            delta={'reference': 0},
+            gauge={'axis': {'range': [None, 15]},
+                   'steps': [
+                {'range': [0, 3], 'color': "lightgray"},
+                {'range': [5, 10], 'color': "gray"}],
+                'threshold': {'line': {'color': "blue", 'width': 4}, 'thickness': 0.75, 'value': 25}}))
+        radial_plot.write_image("plt_img_b.png")
+        with open("plt_img_b.png", "rb") as img_file:
+            raw_base64 = str(base64.b64encode(img_file.read()))
+            plt_b_base64 = "src=" + "data:image/png;base64,{}"
+            plt_b_base64 = plt_b_base64.format(raw_base64[2:-1])
+        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64, plt_b=plt_b_base64, current_user=current_user, candidate_pool=candidate_pool)
     # if the recruiter client is evaluating the potential match of a candidate
     if request.method == 'POST':
         # get the input element with a given name from the posted from
@@ -234,11 +284,11 @@ def recruiter_page():
 @oidc.require_login
 def view_project(project_id):
     project = db.session.query(Recruiter_Project).filter_by(id=project_id).first_or_404()
+    candidate_pool = []
+    # fetch the user objects for profiles in search query
+    for candidate in project.candidates:
+        candidate_pool.append(db.session.query(User).filter_by(id=candidate.user_id).first())
     if request.method == 'GET':
-        candidate_pool = []
-        # fetch the user objects for profiles in search query
-        for candidate in project.candidates:
-            candidate_pool.append(db.session.query(User).filter_by(id=candidate.id).first())
         return render_template('recruiter_view_edit_project.html', title=project.title, project=project, candidate_pool=candidate_pool)
     if request.method == 'POST':
         # get the data supplied by the client and construct sanitzed queries in the db
@@ -259,6 +309,8 @@ def view_project(project_id):
 @oidc.require_login
 def remove_project(project_id):
     project = db.session.query(Recruiter_Project).filter_by(id=project_id).first_or_404()
+    candidates = db.session.query(Project_Candidate).filter_by(project_id=project_id).first_or_404()
+    db.session.delete(candidates)
     db.session.delete(project)
     db.session.commit()
     return redirect(url_for('recruiter_page'))
@@ -321,12 +373,12 @@ def view_candidate(username):
 @oidc.require_login
 def add_candidate(username, project_id):
     if request.method == 'GET':
-        current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
         candidate = db.session.query(User).filter_by(username=username).first()
-        project_canidate = Project_Candidate(user_id=current_user.id, project_id=project_id)
+        project_canidate = Project_Candidate(user_id=candidate.id, project_id=project_id)
         # add user to project
-        db.session.add(project_canidate)
-        db.session.commit()
+        if project_id is not None:
+            db.session.add(project_canidate)
+            db.session.commit()
         return redirect(url_for('recruiter_page'))
 
 

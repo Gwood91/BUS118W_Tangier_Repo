@@ -1,21 +1,31 @@
  {% extends "base.html" %} 
  {% block content %}
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">-->
 
 <div>
-    <h2>New Project</h2>
-    <div style="width: 700px; height: 250px; background: rgb(226, 226, 226); border: solid black 1px;">
-        <h3>Description:</h3>
-        <div>
+    <div style="width: 500px" class="container">
+            <h2>New Project:</h2>
+    </div>
+    <div style="width: 500px; height: 250px; background: rgb(226, 226, 226); border: solid black 1px;" class="container">
+        <h4>Description:</h4>
+        <div >
             <form method="POST">
-                Project Title:<input id="projectTitle" name="projectTitle" type="search">
-                <br> Project Description:<textarea id="projectDescription" name="projectDescription"></textarea>
-                <input type="submit" value="Create">
+                Project Title:
+                <br>
+                <input id="projectTitle" name="projectTitle" type="search">
+                <br>
+                Project Description:
+                <br>
+                <textarea id="projectDescription" name="projectDescription" style="resize: none; height: 75px; width: 350px;"></textarea>
+                <br>
+                <input type="submit" value="Create" class="btn btn-primary">
             </form>
-            <div style="display: inline-flex">
-                <a href="/recruiter" style="float:right"><button>Return to Recruiter View</button></a>
-            </div>
         </div>
     </div>
-
+    <div style="width: 500px; height: 250" class="container">
+        <div style="display: inline-flex">
+            <a href="/recruiter" style="float:right"><button class="btn btn-info">Return to Recruiter View</button></a>
+        </div>
+    </div>
 </div>
 {% endblock %}
