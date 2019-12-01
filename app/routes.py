@@ -26,6 +26,10 @@ import matplotlib.pyplot as plt
 from io import StringIO
 from flask_wtf import FlaskForm
 from sqlalchemy import or_
+# may need to update plotly/ pip install ipywidgets
+import plotly.graph_objs as go
+import plotly
+import json
 
 """TODO: Probably gonna need to change the double directory change here, need to consolidate"""
 # change the directory to current user
@@ -67,9 +71,11 @@ def before_request():
             db.session.add(new_user)
             db.session.commit()
         user_client = user
+        current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
 
     else:
         g.user = None
+        current_user = None
 # define the routes
 
 
@@ -183,7 +189,9 @@ def message_inbox():
 @app.route('/jobs')
 @oidc.require_login
 def jobs():
-    return render_template('jobs.html', title='Jobs')
+    current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+    i = 5
+    return render_template('jobs.html', title='Jobs', current_user=current_user, i=i)
 
 
 @app.route('/myNetwork')
@@ -221,8 +229,8 @@ def recruiter_page():
                 if time == format_time:
                     time_count += 1
             cand_count_data.append(time_count)
-        cand_count_data.append(0)
-        timestamp_data.append(0)
+        cand_count_data = [0] + cand_count_data
+        timestamp_data = ["Dawn of Time"] + timestamp_data
         plt.style.use('dark_background')  # change the color theme
         fig, ax = plt.subplots()
         ax.set_title("Recruiter Activity")  # set the axis title
@@ -234,8 +242,24 @@ def recruiter_page():
             raw_base64 = str(base64.b64encode(img_file.read()))
             plt_a_base64 = "src=" + "data:image/png;base64,{}"
             plt_a_base64 = plt_a_base64.format(raw_base64[2:-1])  # format the base 64 string for html rendering
-        """TODO: USE PLOTLY FOR THE GAUGE CHART/RADIAL GAUGE"""
-        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64, current_user=current_user, candidate_pool=candidate_pool)
+        """GAUGE CHART/RADIAL GAUGE"""
+        radial_plot = go.Figure(go.Indicator(
+            domain={'x': [0, 1], 'y': [0, 1]},
+            value=cand_count_data[-1],
+            mode="gauge+number+delta",
+            title={'text': "Recruiter Activity"},
+            delta={'reference': 0},
+            gauge={'axis': {'range': [None, 15]},
+                   'steps': [
+                {'range': [0, 3], 'color': "lightgray"},
+                {'range': [5, 10], 'color': "gray"}],
+                'threshold': {'line': {'color': "blue", 'width': 4}, 'thickness': 0.75, 'value': 25}}))
+        radial_plot.write_image("plt_img_b.png")
+        with open("plt_img_b.png", "rb") as img_file:
+            raw_base64 = str(base64.b64encode(img_file.read()))
+            plt_b_base64 = "src=" + "data:image/png;base64,{}"
+            plt_b_base64 = plt_b_base64.format(raw_base64[2:-1])
+        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64, plt_b=plt_b_base64, current_user=current_user, candidate_pool=candidate_pool)
     # if the recruiter client is evaluating the potential match of a candidate
     if request.method == 'POST':
         # get the input element with a given name from the posted from

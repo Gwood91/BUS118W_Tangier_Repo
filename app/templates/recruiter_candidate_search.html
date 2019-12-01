@@ -3,39 +3,28 @@
 
 <div>
     <h2>Talent Pool Search</h2>
-    <div style="width: 700px; height: 500px; border: solid black 1px">
+    <div style="width: 755px; height: 500px; border: solid black 1px">
         <div style="display: inline-flex">
-            <div style="width: 225px; height: 500px; background: rgb(226, 226, 226)">
+            <div style="width: 50%; height: 500px; background: rgb(226, 226, 226)">
                 <h3>Candidate Query:</h3>
                 <form method="POST">
-                    <!-- Current Job Title:<input>
+                      <div style="text-align:center; width: 95%;">
+                            <table>
+                                    <tbody>
+                                        <tr><td><label for="major">Major:</label></td><td><input id="major" type="name" name="major" ></td></tr>
+                                        <tr><td><label for="keywords">Keywords:</label></td><td><input id="keywords" type = "text" name="keywords" ></td></tr>
+                                        <tr><td><label for="skills">Skills:</label></td><td><input id="skills" type = "text" name="skills"></td></tr>
+                                        <tr><td><label for="projectName">Project:</label></td><td><select id="projectName" name="projectName" required style="overflow: hidden;
+                                            text-overflow: ellipsis; width:173px">
+                                                {% for project in current_user.profile.recruiter_projects%}
+                                                <option value="{{project.title}}">{{project.title}}</option>
+                                                {% endfor %} 
+                                              </select></td></tr>
+                                    </tbody>
+                                </table>
+                        </div>
                     <br>
-                    City:<input>
-                    <br>
-                    State:<input> -->
-                    Major:<input id="major" name="major">
-                    <br> Industry:
-                    <input id="industry" name="industry">
-                    <br>
-                    <!-- Graduation Year:<input type="date">
-                    <br> -->
-                    <!-- Education:<input type="range">
-                    <br> -->
-                    <!-- Experience:<input type="range">
-                    <br> -->
-                    Keywords:<input id="keywords" name="keywords">
-                    <br> Skills:
-                    <input id="skills" name="skills">
-                    <!-- <input type="checkbox">Willing to Relocate -->
-                    <br> Project Name:
-                    <select id="projectName" name="projectName" required>
-                        {% for project in current_user.profile.recruiter_projects%}
-                        <option value="{{project.title}}">{{project.title}}</option>
-                        {% endfor %} 
-                      </select>
-                    <br><br><br>
-
-                    <input type="submit" value="Search" style="float: right">
+                    <input type="submit" value="Search" style="float: right" class="btn btn-primary">
                 </form>
             </div>
             <div style="width: 500; height: 250px;">
@@ -76,7 +65,7 @@
             </div>
         </div>
     </div>
-    <div style="width: 700px; border: none">
+    <div style="width: 755px; border: none">
         <a href="/recruiter" style="float:right"><button>Return to Recruiter View</button></a>
     </div>
 </div>

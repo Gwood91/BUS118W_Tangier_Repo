@@ -15,7 +15,7 @@
   </div>
 <h3>Recruiter View</h3>
 <div>
-    <div style="display: inline-flex; border: black 1px solid; width: 250px; height: 200px; background: rgb(255, 123, 0)" class="form-group">
+    <div style="display: inline-flex; border: black 1px solid; width: 250px; height: 200px; background: orange" class="form-group">
         <div class="form-group">
             <p style="margin-top: 10px">Projects</p>
             <div style="display: inline-block; border: black 1px solid; width: 240px; height: 65%; background: rgb(236, 236, 236); padding-right: auto; padding-left: auto; overflow:auto; direction: ltr;" class="form-group">
@@ -67,7 +67,8 @@
                         style="width: 225; height: 150; text-align: center;  border: none; display: block;">
                 </div>
                 <div style="display: inline-block; width: 225px; height: 125px; background: orange"class="form-group">
-                    <img src="https://previews.123rf.com/images/icedesign/icedesign1510/icedesign151000003/46727034-abstract-car-speedometer-background-vector.jpg" style="width: 225; height: 125; text-align: center;  border: none; display: block;" class="img-fluid">
+                        <img {{plt_b}} style="width: 400px; height: 340px; text-align: center;  border: none; display: block; vertical-align: middle; margin-top: 100;
+                        margin: 0 auto;">
                         <select id="projectName" name="projectName" required>
                         {% for project in current_user.profile.recruiter_projects%}
                         <option value="{{project.title}}">{{project.title}}</option>
