@@ -155,7 +155,7 @@ def messagePage():
             # return redirect(url_for('messagePage'))
             return render_template('messagePage.html', title='Direct Messaging', get_users=get_users)
 
-@app.route('/send_message/<recipient>', methods=['GET', 'POST'])
+@app.route('/messagePage/<recipient>', methods=['GET', 'POST'])
 @oidc.require_login
 def message_inbox():
     if request.method == 'GET':
