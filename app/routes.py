@@ -75,7 +75,10 @@ def before_request():
 
 @app.route('/home', methods=['GET'])
 def home():
-    return render_template('home.html', title='Home')
+    # dummy items for mock up purposes
+    news_stories = ['test_article', 'test_article', 'test_article', 'test_article', 'test_article', 'test_article', 'test_article']
+    news_feed = ['post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post']
+    return render_template('home.html', title='Home', news_stories=news_stories, news_feed=news_feed)
 
 
 @app.route('/home', methods=['Post'])

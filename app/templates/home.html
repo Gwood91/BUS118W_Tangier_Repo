@@ -1,3 +1,12 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+  $(document).ready(function(){
+  $("button").click(function(){
+  $("#test").toggle();
+  });
+  });
+    $("#button").toggle();
+</script>
 {% extends "base.html" %} 
 <!-- {% import 'bootstrap/wtf.html' as wtf %}  -->
 {% block content %}
@@ -6,15 +15,61 @@
       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ9aGT0JLi7-nKbbvDl8raJV2kdmlSo4NUKIAZ5LKih5g2pGzSBQ" class="media-object" style="width:60px">
     </div>
     <div class="media-body">
-      <h2 class="media-heading">TANGIER</h2>
+      <h2 class="media-heading" style="font-family:Courier New">tangier</h2>
       <!-- <i>Elevate your career!</i> -->
       <i>The power of people!</i>
       <br>
-      <i>Squeeze the most juice from your career!</i>
+      <i>Squeeze the most juice outta' your career!</i>
     </div>
   </div>
 <p class="alert alert-primary">This is the home page</p>
 <div class="alert alert-primary" role="alert">
   This is a primary alert—check it out!
+</div>
+<div style="border: black solid 1px; width: 1200px; height: 700px; display:inline-flex;" class="container">
+  <div style="border: black solid 1px; width: 50%; height: 100%; background:orange">
+    <h4>Newsfeed</h4>
+              <div style="position: static; margin-top: 25px; width: 500px; background:white">
+          <div id="test" style="border: black 2px solid; width: 500px;  display: none;" class="container">
+            <form>
+                What's New?
+                <br>
+                <textarea style="width: 100%; height: 80px; resize: none; margin:auto">
+                </textarea>
+            </form>
+            <button class="btn btn-info" id="button">Post</button>
+         </div>
+                <div id="draftMsg" style="background:orange">
+                        <button id="button" class="btn btn-primary">Create Status</button>
+                </div>
+          </div>
+      <div style=" overflow:auto; direction: ltr; width: 100%; height: 85%; background:white">
+            {% for post in news_feed%}
+              <p> {{ post }}</p>
+              <hr>
+            {% endfor %}
+          </div>
+
+  </div>
+  <div style="border: black solid 1px; width: 50%; height: 100%">
+      <div style="border: black solid 1px; width: 100%; height: 50%; background:orange">
+        <h4>Top Stories</h4>
+          <div style=" overflow:auto; direction: ltr; width: 100%; height: 90%; background:white">
+            {% for story in news_stories%}
+              <p> Make this a Hero Menu </p>
+              <hr>
+            {% endfor %}
+          </div>
+      </div>
+       <div style="border: black solid 1px; width: 100%; height: 50%; background:orange">
+        <h4>Recent Headlines</h4>
+          <div style=" overflow:auto; direction: ltr; width: 100%; height: 90%; background:white">
+            {% for story in news_stories%}
+              <p> {{ story }}</p>
+              <hr>
+            {% endfor %}
+          </div>
+      </div>
+  </div>
 </div>
 {% endblock %}
