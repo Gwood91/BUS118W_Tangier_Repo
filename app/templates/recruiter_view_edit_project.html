@@ -5,11 +5,16 @@
     <h2>{{ project.title }}</h2>
     <div style="width: 700px; height: 250px; background: rgb(226, 226, 226); border: solid black 1px;">
         <h3>Description:</h3>
-        <div>
+        <div class="container">
             <form method="POST">
-                Edit Project Title:<input id="projectTitle" name="projectTitle" type="search" style="width: 300px;" value="{{ project.title }}">
-                <br> Edit Project Description:<textarea id="projectDescription" name="projectDescription" style="width: 300px; height: 50px;">{{ project.description}}</textarea>
-                <input type="submit" value="Save">
+                <table>
+                    <tbody>
+                        <tr><td><label for="projectTitle">Edit Project Title:</label></td><td><input id="projectTitle" name="projectTitle" type="search" style="width: 300px; resize: none;" value="{{ project.title }}"></td></tr>
+                        <tr><td><label for="projectDescription">Edit Project Description:</label></td><td><textarea id="projectDescription" name="projectDescription" style="width: 300px; height: 50px; resize: none"">{{ project.description}}</textarea></td></tr>
+                        </td></tr>
+                        <tr><td><input type="submit" value="Save"></td></tr>
+                    </tbody>
+                </table>
             </form>
             <a href="{{ url_for('remove_project', project_id=project.id) }}"><button>Remove</button></a>
             <div style="display: inline-flex">
