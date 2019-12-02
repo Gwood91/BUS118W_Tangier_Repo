@@ -25,11 +25,11 @@
         <input name="Upload_Image" type="file" style="padding: 0;" class="btn btn-default">
         <div style="display: block; border: 1px black solid">
             <h3>About:</h3>
-            <textarea style="width: 500px; height: 150px; resize: none" id="user_bio" name="user_bio" class="form-control">{{ current_user.profile.user_bio }} </textarea>
+            <textarea style="width: 500px; height: 150px; resize: none" id="user_bio" name="user_bio" class="form-control">{{current_user.profile.user_bio}}</textarea>
             <h3>Experience:</h3>
-            <textarea style="width: 500px; height: 150px; resize: none" id="experience" name="experience" class="form-control">{{ current_user.profile.experience }} </textarea>
+            <textarea style="width: 500px; height: 150px; resize: none" id="experience" name="experience" class="form-control">{{current_user.profile.experience}}</textarea>
             <h3>Skills:</h3>
-            <textarea style="width: 500px; height: 150px; resize: none" id="skills" name="skills" class="form-control">{{ current_user.profile.skills }} </textarea>
+            <textarea style="width: 500px; height: 150px; resize: none" id="skills" name="skills" class="form-control">{{current_user.profile.skills}}</textarea>
             <input name="Save_Profile" type="submit" value="Save Profile" class="btn btn-default">
         </div>
     </form>
