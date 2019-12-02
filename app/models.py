@@ -47,6 +47,8 @@ class Message(db.Model):
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     unread = db.Column(db.Boolean, default=True, nullable=True)
+    sender_fname = db.Column(db.String(96))
+    sender_lname = db.Column(db.String(96))
 
     def __repr__(self):
         return '<Message {}>'.format(self.body)
@@ -107,6 +109,21 @@ class Project_Candidate(db.Model):
     project_id = db.Column('project_id', db.Integer, db.ForeignKey('recruiter__project.id'))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
+class Job_Post(db.Model):
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(140))
+    company = db.Column(db.String(140))
+    description = db.Column(db.String())
+    experience_level = db.Column(db.Integer())
+    industry = db.Column(db.String(140))
+    job_type = db.Column(db.String(140))
+    salary = db.Column(db.Integer())
+    city = db.Column(db.String(140))
+    state = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    profile_id = db.Column(db.Integer, db.ForeignKey('user__profile.id'))
+
 
 class User_Profile(db.Model):
     # __tablename__ = "user_profile"
@@ -118,7 +135,12 @@ class User_Profile(db.Model):
     skills = db.Column(db.String(256))
     experience = db.Column(db.String(256))
     recruiter_projects = relationship('Recruiter_Project', backref='user_profile', lazy=True)
+    job_posts = relationship("Job_Post", uselist=False, backref="user_profile")
 
+followers = db.Table('followers',
+    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
+)
 
 class User(db.Model):
     __table_args__ = {'extend_existing': True}
@@ -130,9 +152,17 @@ class User(db.Model):
     profile = relationship("User_Profile", uselist=False, backref="User")
     messages_sent = db.relationship('Message', foreign_keys='Message.sender_id', backref='author', lazy='dynamic')
     messages_received = db.relationship('Message', foreign_keys='Message.recipient_id', backref='recipient', lazy='dynamic')
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
+    followed = db.relationship(
+        'User', secondary=followers,
+        primaryjoin=(followers.c.follower_id == id),
+        secondaryjoin=(followers.c.followed_id == id),
+        backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
+
+
 
 
 # initialize the database

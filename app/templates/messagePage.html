@@ -1,3 +1,12 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+  $(document).ready(function(){
+  $("button").click(function(){
+  $("#test").toggle();
+  });
+  });
+    $("#button").toggle();
+</script>
 {% extends "base.html" %} 
 {% block content %}
 <div class="media">
@@ -12,7 +21,40 @@
     <i>Squeeze the most juice from your career!</i>
   </div>
 </div>
-<div id="sendDM" class="form-group col-sm-6 offset-sm-3 text-center">
+<div style="border: black solid 1px; width: 50%; height: 100%; background:orange; float: left;">
+  <h4>Send a DM!</h4>
+  <div style="position: static; margin-top: 25px; width: 500px; background:white">
+    <div id="test" style="border: black 2px solid; width: 500px;  display: none;" class="container">
+        <div id="sendDM" class="form-group col-sm-6 offset-sm-3 text-center">
+            <form id="formID" method="POST">
+                To: <select name="selectAUser" id="selectAUser" required class="form-control">
+                    <option value="">Select a User</option>
+                    {% for u in get_users%}
+                       <option value="{{u.first_name}} {{u.last_name}}">{{u.first_name}} {{u.last_name}}</option>
+                       {% endfor %}
+                    <select id ="projectName" name = "projectName" class="form-control">   
+                     </select>
+                </select>
+                <br><br>
+                <textarea name="sendaDM" id="sendaDM" cols="50" rows="10" placeholder="Enter message..." class="form-control"></textarea>
+                <input type="Submit" value="Send" class="form-control" style="background-color: #63a0d4; color: white;">
+            </form>
+          </div>
+      <!-- <button class="btn btn-info" id="button">Send</button> -->
+    </div>
+    <div id="draftMsg" style="background:orange">
+      <button id="button" class="btn btn-primary">Create New Message</button>
+    </div>
+  </div>  
+</div>
+<div style=" overflow:auto; direction: ltr; width: 50%; height: 100%; background:whitesmoke; float: left;" class="container">
+    {% for message in user.messages_received%}
+      <p> From: {{ message.sender_fname }} {{ message.sender_lname }} {{ message.body }}</p>
+      <!-- <p>test test test test</p> -->
+      <hr>
+    {% endfor %}
+  </div>
+<!-- <div id="sendDM" class="form-group col-sm-6 offset-sm-3 text-center">
   <form id="formID" method="POST">
       To: <select name="selectAUser" id="selectAUser" required class="form-control">
           <option value="">Select a User</option>
@@ -26,6 +68,6 @@
       <textarea name="sendaDM" id="sendaDM" cols="50" rows="10" placeholder="Enter message..." class="form-control"></textarea>
       <input type="Submit" value="Send" class="form-control" style="background-color: #63a0d4; color: white;">
   </form>
-</div>
+</div> -->
 
 {% endblock %}

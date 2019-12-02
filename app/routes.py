@@ -145,45 +145,26 @@ def profile():
 def messagePage():
     # Users = User.query.all()
         get_users = User.query.all()
+        news_feed = ['message', 'message', 'message', 'message', 'message', 'message', 'message', 'message', 'message']
+        user = db.session.query(User).filter_by(email=g.user.profile.email).first_or_404()
+
         if request.method == 'GET':
-            return render_template('messagePage.html', title='Direct Messaging', get_users=get_users)
+            return render_template('messagePage.html', title='Direct Messaging', user=user, news_feed=news_feed, get_users=get_users)
         if request.method == 'POST':
             # get the data supplied by the client and construct sanitzed queries in the db
             recipient_id = str(request.form.get("selectAUser", None))
             print(recipient_id, file=sys.stderr)
             message_body = str(request.form.get("sendaDM", None))
-            user = db.session.query(User).filter_by(email=g.user.profile.email).first_or_404()
             # user = User.query.filter_by(username=Message.recipient_id).first_or_404()
             # user = db.session.query(User).filter_by(username=recipient_id).first()
             recipient_first_name, recipient_last_name = recipient_id.split(" ")
             recipient_user = db.session.query(User).filter_by(first_name=recipient_first_name, last_name=recipient_last_name).first_or_404()
-            new_message = Message(sender_id=user.id, recipient_id=recipient_user.id, body=message_body)
+            new_message = Message(sender_id=user.id, recipient_id=recipient_user.id, body=message_body, unread=True, sender_fname=user.first_name, sender_lname=user.last_name)
             db.session.add(new_message)
             db.session.commit()
             # flash(_('Your message has been sent!'))
-            # return redirect(url_for('messagePage'))
-            return render_template('messagePage.html', title='Direct Messaging', get_users=get_users)
 
-
-@app.route('/send_message/<recipient>', methods=['GET', 'POST'])
-@oidc.require_login
-def message_inbox():
-    if request.method == 'GET':
-        return render_template('messagePage.html', title='Inbox')
-    if request.method == 'POST':
-        User.id.last_message_read_time = datetime.utcnow()
-        db.session.commit()
-        page = request.args.get('page', 1, type=int)
-        messages = user.id.messages_received.order_by(
-            Message.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False)
-        next_url = url_for('main.messages', page=messages.next_num) \
-            if messages.has_next else None
-        prev_url = url_for('main.messages', page=messages.prev_num) \
-            if messages.has_prev else None
-        return render_template('messages.html', messages=messages.items,
-                               next_url=next_url, prev_url=prev_url)
-
+            return render_template('messagePage.html', title='Direct Messaging', user=user, news_feed=news_feed, get_users=get_users)
 
 @app.route('/jobs')
 @oidc.require_login
