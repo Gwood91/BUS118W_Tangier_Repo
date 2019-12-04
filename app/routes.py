@@ -31,7 +31,7 @@ import plotly.graph_objs as go
 import plotly
 import json
 from itertools import groupby
-
+from tangie import fetch_headlines
 """TODO: Probably gonna need to change the double directory change here, need to consolidate"""
 # change the directory to current user
 current_user = user_root = os.path.expanduser('~')
@@ -80,8 +80,8 @@ def before_request():
 
 @app.route('/home', methods=['GET'])
 def home():
-    # dummy items for mock up purposes
-    news_stories = ['test_article', 'test_article', 'test_article', 'test_article', 'test_article', 'test_article', 'test_article']
+    # fetch the headlines
+    news_stories = fetch_headlines()
     news_feed = ['post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post']
     return render_template('home.html', title='Home', news_stories=news_stories, news_feed=news_feed)
 
