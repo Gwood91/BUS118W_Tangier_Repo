@@ -21,15 +21,15 @@
             <form method="POST">
                 <table>
                     <tbody>
-                        <tr><td><label for="jobTitle">Job Title:</label></td><td><input id="jobTitle" name="jobTitle" type="text" style="width: 300px; resize: none;"></td></tr>
-                        <tr><td><label for="company">Company:</label></td><td><input id="company" name="company" type="text" style="width: 300px; resize: none;"></td></tr>
-                        <tr><td><label for="industry">Industry:</label></td><td><input id="industry" name="industry" type="text" style="width: 300px; resize: none;"></td></tr>
-                        <tr><td><label for="jobType">Job Type:</label></td><td><input id="jobType" name="jobType" type="text" style="width: 300px; resize: none;"></td></tr>
-                        <tr><td><label for="salary">Salary:</label></td><td><input id="salary" name="salary" type="number" style="width: 300px; resize: none;"></td></tr>
-                        <tr><td><label for="city">City:</label></td><td><input id="city" name="city" type="text" style="width: 300px; resize: none;"></td></tr>
-                        <tr><td><label for="state">State:</label></td><td><input id="state" name="state" type="text" style="width: 300px; resize: none;"></td></tr>
-                        <tr><td><label for="jobDesc">Description:</label></td><td><textarea id="jobDesc" name="jobDesc" style="width: 300px; height: 50px; resize: none"></textarea></td></tr>
-                        <tr><td><label for="experienceLevel">Experience Level:</label></td><td><input id="experienceLevel" name="experienceLevel" type="range" style="width: 300px; resize: none;" min="0" max="10" onchange="updateTextInput(this.value);"></td></tr>
+                        <tr><td><label for="jobTitle">Job Title:</label></td><td><input id="jobTitle" name="jobTitle" type="text" style="width: 300px; resize: none;" required></td></tr>
+                        <tr><td><label for="company">Company:</label></td><td><input id="company" name="company" type="text" style="width: 300px; resize: none;" required></td></tr>
+                        <tr><td><label for="industry">Industry:</label></td><td><input id="industry" name="industry" type="text" style="width: 300px; resize: none;" required></td></tr>
+                        <tr><td><label for="jobType">Job Type:</label></td><td><input id="jobType" name="jobType" type="text" style="width: 300px; resize: none;" required></td></tr>
+                        <tr><td><label for="salary">Salary:</label></td><td><input id="salary" name="salary" type="number" style="width: 300px; resize: none;" required></td></tr>
+                        <tr><td><label for="city">City:</label></td><td><input id="city" name="city" type="text" style="width: 300px; resize: none;" required></td></tr>
+                        <tr><td><label for="state">State:</label></td><td><input id="state" name="state" type="text" style="width: 300px; resize: none;" required></td></tr>
+                        <tr><td><label for="jobDesc">Description:</label></td><td><textarea id="jobDesc" name="jobDesc" style="width: 300px; height: 50px; resize: none" required></textarea></td></tr>
+                        <tr><td><label for="experienceLevel">Experience Level:</label></td><td><input id="experienceLevel" name="experienceLevel" type="range" style="width: 300px; resize: none;" min="0" max="10" onchange="updateTextInput(this.value);" required></td></tr>
                         <tr><td></td><td><input type="text" id="textInput" value="" style="width: 150px;" readonly></td></tr>
 
                     </tbody>

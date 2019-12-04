@@ -109,6 +109,16 @@ class Project_Candidate(db.Model):
     project_id = db.Column('project_id', db.Integer, db.ForeignKey('recruiter__project.id'))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
+
+class Job_Applicant(db.Model):
+    __tablename__ = 'Project_Candidate'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    job_post_id = db.Column('job_post_id', db.Integer, db.ForeignKey('job__post.id'))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+
 class Job_Post(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
@@ -123,6 +133,7 @@ class Job_Post(db.Model):
     state = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     profile_id = db.Column(db.Integer, db.ForeignKey('user__profile.id'))
+    applicants = relationship("Job_Applicant")
 
 
 class User_Profile(db.Model):
@@ -137,10 +148,12 @@ class User_Profile(db.Model):
     recruiter_projects = relationship('Recruiter_Project', backref='user_profile', lazy=True)
     job_posts = relationship("Job_Post", uselist=False, backref="user_profile")
 
+
 followers = db.Table('followers',
-    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
-)
+                     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+                     db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
+                     )
+
 
 class User(db.Model):
     __table_args__ = {'extend_existing': True}
@@ -161,7 +174,6 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
-
 
 
 
