@@ -3,7 +3,12 @@
     <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">-->
 <script>
     function updateTextInput(val) {
-          document.getElementById('textInput').value=val; 
+        if (val == 1 ) {
+            document.getElementById('textInput').value=val + " Year"; 
+        }
+        else{
+            document.getElementById('textInput').value=val + " Years"; 
+        }
         }
 </script>
 <div>
@@ -25,7 +30,7 @@
                         <tr><td><label for="state">State:</label></td><td><input id="state" name="state" type="text" style="width: 300px; resize: none;"></td></tr>
                         <tr><td><label for="jobDesc">Description:</label></td><td><textarea id="jobDesc" name="jobDesc" style="width: 300px; height: 50px; resize: none"></textarea></td></tr>
                         <tr><td><label for="experienceLevel">Experience Level:</label></td><td><input id="experienceLevel" name="experienceLevel" type="range" style="width: 300px; resize: none;" min="0" max="10" onchange="updateTextInput(this.value);"></td></tr>
-                        <tr><td></td><td><input type="text" id="textInput" value="" style="width: 150px;"></td></tr>
+                        <tr><td></td><td><input type="text" id="textInput" value="" style="width: 150px;" readonly></td></tr>
 
                     </tbody>
                 </table>

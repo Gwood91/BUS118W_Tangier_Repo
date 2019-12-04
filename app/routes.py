@@ -389,10 +389,17 @@ def create_job():
     # if the recruiter client is evaluating the potential match of a candidate
     if request.method == 'POST':
         # get the data supplied by the client and construct sanitzed queries in the db
-        project_title = str(request.form.get("projectTitle", None))
-        project_description = str(request.form.get("projectDescription", None))
+        job_title = str(request.form.get("jobTitle", None))
+        company = str(request.form.get("company", None))
+        industry = str(request.form.get("industry", None))
+        job_type = str(request.form.get("jobType", None))
+        salary = str(request.form.get("salary", None))
+        city = str(request.form.get("city", None))
+        state = str(request.form.get("state", None))
+        job_description = str(request.form.get("jobDesc", None))
+        experience_level = str(request.form.get("experienceLevel", None))
         user = db.session.query(User).filter_by(email=g.user.profile.email).first()
-        new_job = Job_Post(profile_id=user.profile.id, user_id=user.id, description=project_description, title=project_title)
-        db.session.add(new_project)
+        new_job = Job_Post(title=job_title, company=company, description=job_description, experience_level=experience_level, industry=industry, job_type=job_type, salary=salary, city=city, state=state, profile_id=user.profile.id)
+        db.session.add(new_job)
         db.session.commit()
         return redirect(url_for('recruiter_page'))
