@@ -39,7 +39,7 @@ local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
 sys.path.append(local_path)
 """an important distinction here is that we are importing the db module, not the db object created in __init__"""
 from app import app, db
-from models import User, User_Profile, Recruiter_Project, Message, Post, Project_Candidate
+from models import User, User_Profile, Recruiter_Project, Message, Post, Project_Candidate, Job_Post
 
 
 # note: the return variable cannot have the same name as the function that is returning it
@@ -165,6 +165,7 @@ def messagePage():
             # flash(_('Your message has been sent!'))
 
             return render_template('messagePage.html', title='Direct Messaging', user=user, news_feed=news_feed, get_users=get_users)
+
 
 @app.route('/jobs')
 @oidc.require_login
@@ -375,6 +376,23 @@ def create_project():
         project_description = str(request.form.get("projectDescription", None))
         user = db.session.query(User).filter_by(email=g.user.profile.email).first()
         new_project = Recruiter_Project(profile_id=user.profile.id, user_id=user.id, description=project_description, title=project_title)
+        db.session.add(new_project)
+        db.session.commit()
+        return redirect(url_for('recruiter_page'))
+
+
+@app.route('/newJob', methods=['GET', 'POST'])
+@oidc.require_login
+def create_job():
+    if request.method == 'GET':
+        return render_template('recruiter_create_job_post.html', title='Create Job Post', i=5)
+    # if the recruiter client is evaluating the potential match of a candidate
+    if request.method == 'POST':
+        # get the data supplied by the client and construct sanitzed queries in the db
+        project_title = str(request.form.get("projectTitle", None))
+        project_description = str(request.form.get("projectDescription", None))
+        user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+        new_job = Job_Post(profile_id=user.profile.id, user_id=user.id, description=project_description, title=project_title)
         db.session.add(new_project)
         db.session.commit()
         return redirect(url_for('recruiter_page'))

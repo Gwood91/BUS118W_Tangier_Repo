@@ -19,7 +19,7 @@
       <!-- <i>Elevate your career!</i> -->
       <i>The power of people!</i>
       <br>
-      <i>Squeeze the most juice outta' your career!</i>
+      <i>Squeeze the most juice from your career!</i>
     </div>
   </div>
 <!-- <p class="alert alert-primary">This is the home page</p> -->
@@ -38,23 +38,33 @@
         </form>
         <button class="btn btn-info" id="button">Post</button>
       </div>
+      {% if g.user %}
       <div id="draftMsg" style="background:orange">
         <button id="button" class="btn btn-primary">Create Status</button>
       </div>
+      {% endif %}
     </div>
     <div style=" overflow:auto; direction: ltr; width: 100%; height: 85%; background:white" class="container">
-      {% for post in news_feed%}
+    {% if not g.user %}
+    <div class="container">
+        <b>Please Login/Register to join the discussion!</b>
+    </div>
+    {% else %}
+    {% for post in news_feed%}
         <p> {{ post }}</p>
         <hr>
       {% endfor %}
+    {% endif %}
     </div>
   </div>
   <div style="border: black solid 1px; width: 50%; height: 100%">
       <div style="border: black solid 1px; width: 100%; height: 50%; background:orange">
         <h4>Top Stories</h4>
           <div style=" overflow:auto; direction: ltr; width: 100%; height: 90%; background:white">
-            {% for story in news_stories%}
-              <p> Make this a Hero Menu </p>
+            {% for news in news_stories[:5]%}
+              <h5> {{ news.title.text }}</h5>
+              <a href="{{ news.link.text }}" target="_blank"> {{ news.link.text }}</a>
+              <p> {{ news.pubDate.text }}</p>
               <hr>
             {% endfor %}
           </div>
@@ -62,8 +72,10 @@
        <div style="border: black solid 1px; width: 100%; height: 50%; background:orange">
         <h4>Recent Headlines</h4>
           <div style=" overflow:auto; direction: ltr; width: 100%; height: 90%; background:white">
-            {% for story in news_stories%}
-              <p> {{ story }}</p>
+            {% for news in news_stories[5:]%}
+              <h5> {{ news.title.text }}</h5>
+              <a href="{{ news.link.text }}" target="_blank"> {{ news.link.text }}</a>
+              <p> {{ news.pubDate.text }}</p>
               <hr>
             {% endfor %}
           </div>
