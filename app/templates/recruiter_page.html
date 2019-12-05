@@ -58,7 +58,7 @@
 <div>
     <div style="display: inline-flex; border: black 1px solid; width: 250px; height: 200px; background: orange" class="form-group">
         <div class="form-group">
-            <p style="margin-top: 10px">Projects</p>
+            <p style="margin-top: 10px">Sourcing Projects</p>
             <div style="display: inline-block; border: black 1px solid; width: 240px; height: 65%; background: rgb(236, 236, 236); padding-right: auto; padding-left: auto; overflow:auto; direction: ltr;" class="form-group">
                 {% for project in current_user.profile.recruiter_projects%}
                 <p>{{ project.title }}</p>
@@ -95,12 +95,11 @@
     </div>
     <div style="display: inline-flex; border: black 1px solid; width: 250px; height: 200px; background: rgb(236, 236, 236)" class="form-group">
         <div class="form-group">
-            <p style="margin-top: 10px">Jobs</p>
+            <p style="margin-top: 10px">Job Listings</p>
             <div style="display: inline-block; border: black 1px solid; width: 240px; height: 65%; background: rgb(236, 236, 236); padding-right: auto; padding-left: auto; overflow:auto; direction: ltr;" class="form-group">
-                {% for project in current_user.profile.recruiter_projects%}
-                <p>{{ project.title }}</p>
-                <a href="{{ url_for('view_project', project_id=project.id) }}"><button class="bluebBtn">View/Edit</button></a>
-                <a href="{{ url_for('remove_project', project_id=project.id) }}"><button class="bluebBtn">Remove</button></a>
+                {% for job_post in current_user.profile.job_posts%}
+                <p>{{ job_post.title }}</p>
+                <a href="{{ url_for('view_edit_job', job_post_id=job_post.id) }}"><button class="bluebBtn">View/Edit</button></a>
                 <hr> 
                 {% endfor %}
             </div>

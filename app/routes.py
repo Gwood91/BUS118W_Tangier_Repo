@@ -39,7 +39,7 @@ local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
 sys.path.append(local_path)
 """an important distinction here is that we are importing the db module, not the db object created in __init__"""
 from app import app, db
-from models import User, User_Profile, Recruiter_Project, Message, Post, Project_Candidate, Job_Post
+from models import User, User_Profile, Recruiter_Project, Message, Post, Project_Candidate, Job_Post, Job_Applicant
 
 
 # note: the return variable cannot have the same name as the function that is returning it
@@ -167,12 +167,47 @@ def messagePage():
             return render_template('messagePage.html', title='Direct Messaging', user=user, news_feed=news_feed, get_users=get_users)
 
 
-@app.route('/jobs')
+@app.route('/jobs', methods=['GET', 'POST'])
 @oidc.require_login
 def jobs():
     current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
-    i = 5
-    return render_template('jobs.html', title='Jobs', current_user=current_user, i=i)
+    if request.method == 'GET':
+        jobs = db.session.query(Job_Post).all()
+        return render_template('jobs.html', title='Jobs', current_user=current_user, jobs=jobs)
+    if request.method == 'POST':
+        city = str(request.form.get("city", None))
+        state = str(request.form.get("state", None))
+        job_title = str(request.form.get("jobTitle", None))
+        keywords = str(request.form.get("keywords", None))
+        skills = str(request.form.get("skills", None))
+        jobs = db.session.query(Job_Post).filter_by(city=city).all()
+        return render_template('jobs.html', title='Jobs', current_user=current_user, jobs=jobs)
+
+
+@app.route('/jobs/view/<job_id>', methods=['GET', 'POST'])
+@oidc.require_login
+def view_job(job_id):
+    current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+    current_job = db.session.query(Job_Post).filter_by(id=job_id).first_or_404()
+    if request.method == 'GET':
+        jobs = db.session.query(Job_Post).all()
+        return render_template('view_job.html', title=current_job.title, current_user=current_user, current_job=current_job)
+    if request.method == 'POST':
+        city = str(request.form.get("city", None))
+        return render_template('view_job.html', title=current_job.title, current_user=current_user, current_job=current_job)
+
+
+@app.route('/jobs/apply/<job_id>', methods=['GET', 'POST'])
+@oidc.require_login
+def job_apply(job_id):
+    current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+    exists = db.session.query(Job_Applicant).filter_by(user_id=current_user.id, job_post_id=job_id).first()
+    # make sure users can only to apply once to any given job
+    if exists is None:
+        new_applicant = Job_Applicant(job_post_id=job_id, user_id=current_user.id)
+        db.session.add(new_applicant)
+        db.session.commit()
+    return redirect(url_for('jobs'))
 
 
 @app.route('/myNetwork')
@@ -220,7 +255,7 @@ def recruiter_page():
                     timestamp_unique.append(time_stamp)
         plt.style.use('dark_background')  # change the color theme
         fig, ax = plt.subplots()
-        ax.set_title("Recruiter Activity")  # set the axis title
+        ax.set_title("Daily Recruiting Activity")  # set the axis title
         # ax.plot(timestamp_data, cand_count_data)  # create the plot
         ax.fill_between(timestamp_unique, cand_count_data)
         print(cand_count_data, timestamp_unique, file=sys.stderr)
@@ -403,3 +438,40 @@ def create_job():
         db.session.add(new_job)
         db.session.commit()
         return redirect(url_for('recruiter_page'))
+
+
+@app.route('/recruiter/job/<job_post_id>', methods=['GET', 'POST'])  # view/edit a given project
+@oidc.require_login
+def view_edit_job(job_post_id):
+    # check if the current user is authorized to access the project
+    current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+    job_post = db.session.query(Job_Post).filter_by(id=job_post_id, profile_id=current_user.profile.id).first_or_404()
+    applicants = []
+    # fetch the user objects for profiles in search query
+    for applicant in job_post.applicants:
+        applicants.append(db.session.query(User).filter_by(id=applicant.user_id).first())
+    if request.method == 'GET':
+        return render_template('recruiter_view_edit_job_post.html', title=job_post.title, job_post=job_post, applicants=applicants)
+    if request.method == 'POST':
+        job_title = str(request.form.get("jobTitle", None))
+        company = str(request.form.get("company", None))
+        industry = str(request.form.get("industry", None))
+        job_type = str(request.form.get("jobType", None))
+        salary = str(request.form.get("salary", None))
+        city = str(request.form.get("city", None))
+        state = str(request.form.get("state", None))
+        job_description = str(request.form.get("jobDesc", None))
+        experience_level = str(request.form.get("experienceLevel", None))
+
+        job_post.title = job_title
+        job_post.company = company
+        job_post.industry = industry
+        job_post.job_type = job_type
+        job_post.salary = salary
+        job_post.city = city
+        job_post.state = state
+        job_post.description = job_description
+        job_post.experience_level = experience_level
+        # update the the db session to save the above changes
+        db.session.commit()
+        return render_template('recruiter_view_edit_job_post.html', title=job_post.title, job_post=job_post, applicants=applicants)

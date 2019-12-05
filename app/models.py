@@ -145,7 +145,7 @@ class User_Profile(db.Model):
     skills = db.Column(db.String(256))
     experience = db.Column(db.String(256))
     recruiter_projects = relationship('Recruiter_Project', backref='user_profile', lazy=True)
-    job_posts = relationship("Job_Post", uselist=False, backref="user_profile")
+    job_posts = relationship("Job_Post", backref="user_profile")
 
 
 followers = db.Table('followers',

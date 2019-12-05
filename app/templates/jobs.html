@@ -28,14 +28,13 @@
                     <h3 style="padding-right:auto; padding-left:auto;">Search Results:</h3>
                     <hr>
                     <div style="display: inline-block; width: 475; height: 280px; background: rgb(231, 231, 231); overflow: scroll; overflow-x: hidden">
-                        {% if results_len != 0 %} 
-                        {% for user in results%}
+                        {% if jobs is not none %} 
+                        {% for job in jobs%}
                         <div>
                             <div style="display:block;">
-                                 <img src="data:image/png;base64,{{user.profile.profile_picture}}" style="width: 50px; height: 50px;  border-radius: 70%;">
-                                <p style="text-align: center">{{ user.first_name }} {{ user.last_name }}</p>
+                                <h5 style="text-align: center">{{ job.title }}: {{ job.company }}</h5>
                             </div>
-                            <a href="{{ url_for('view_candidate', username=user.username) }}"><button style="float: right">View Profile</button></a>
+                            <a href="{{ url_for("view_job", job_id=job.id) }}"><button style="float: right" class="btn btn-alert">View Job</button></a>
                             <br>
                             <hr>
                         </div>
