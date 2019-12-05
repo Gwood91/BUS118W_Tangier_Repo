@@ -31,7 +31,7 @@ import plotly.graph_objs as go
 import plotly
 import json
 from itertools import groupby
-from tangie import fetch_headlines
+from tangie import fetch_headlines, generate_dashboard_vis
 """TODO: Probably gonna need to change the double directory change here, need to consolidate"""
 # change the directory to current user
 current_user = user_root = os.path.expanduser('~')
@@ -265,6 +265,7 @@ def recruiter_page():
             raw_base64 = str(base64.b64encode(img_file.read()))
             plt_a_base64 = "src=" + "data:image/png;base64,{}"
             plt_a_base64 = plt_a_base64.format(raw_base64[2:-1])  # format the base 64 string for html rendering
+        # get the candidates from each recruiter project a
         """GAUGE CHART/RADIAL GAUGE"""
         radial_plot = go.Figure(go.Indicator(
             domain={'x': [0, 1], 'y': [0, 1]},
@@ -282,7 +283,13 @@ def recruiter_page():
             raw_base64 = str(base64.b64encode(img_file.read()))
             plt_b_base64 = "src=" + "data:image/png;base64,{}"
             plt_b_base64 = plt_b_base64.format(raw_base64[2:-1])
-        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64, plt_b=plt_b_base64, current_user=current_user, candidate_pool=candidate_pool)
+        applicant_list = []
+        job_posts = db.session.query(Job_Post).filter_by(profile_id=current_user.profile.id).all()
+        for post in job_posts:
+            for applicant in post.applicants:
+                applicant_list.append(applicant)
+        plt_c = generate_dashboard_vis(applicant_list, title="Applicant Activity")
+        return render_template('recruiter_page.html', title='Recruiter', candidate_analysis="NULL", i=15, plt_a=plt_a_base64, plt_b=plt_b_base64, plt_c=plt_c, current_user=current_user, candidate_pool=candidate_pool)
     # if the recruiter client is evaluating the potential match of a candidate
     if request.method == 'POST':
         # get the input element with a given name from the posted from

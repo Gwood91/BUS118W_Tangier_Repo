@@ -22,13 +22,13 @@
                 margin: 0 auto;">
             </div>
             <div style="width: 400px; height: 250px;" class="form-group">
-                <div style="display: inline-block; width: 225px; height: 125px; background: blueviolet" class="form-group">
-                    <img src="https://images.squarespace-cdn.com/content/v1/55ff5070e4b0333acc0895c0/1454701647329-NEFF9ODTAJ1G1G274H1M/ke17ZwdGBToddI8pDm48kCR6a5JeC5JWrXe9YaB7sYFZw-zPPgdn4jUwVcJE1ZvWEtT5uBSRWt4vQZAgTJucoTqqXjS3CfNDSuuf31e0tVGo2K-r6KoC_ccDMHjdY7DgKbShbQnAvRbhNVmzddzHnzqWIIaSPh2v08GbKqpiV54/image-asset.png?format=1500w"
-                        style="width: 225; height: 150; text-align: center;  border: none; display: block;">
+                <div style="display: inline-block; width: 225px; height: 170px; background: blueviolet;" class="form-group">
+                    <img {{plt_c}}
+                        style="width: 250px; height: 200px; text-align: center;  border: none; display: block;">
                 </div>
-                <div style="display: inline-block; width: 225px; height: 125px; background: orange"class="form-group">
-                        <img {{plt_b}} style="width: 400px; height: 340px; text-align: center;  border: none; display: block; vertical-align: middle; margin-top: 100;
-                        margin: 0 auto;">
+                <br>
+                <div style="display: inline-block; width: 225px; height: 125px; background: orange; margin-top:5px; margin-bottom:10px"class="form-group">
+                        <img {{plt_b}} style="width: 400px; height: 340px; text-align: center;  border: none; display: block; vertical-align: middle; margin-bottom: 100px;">
                         <select id="projectName" name="projectName" required>
                         {% for project in current_user.profile.recruiter_projects%}
                         <option value="{{project.title}}">{{project.title}}</option>
@@ -53,7 +53,7 @@
     <!--<h4>Analysis:</h4>-->
     <!--<p> {{ candidate_analysis }} </p>-->
 </div>
-<br><br><br>
+<br><br><br><br>
 <h3>Recruiter View</h3>
 <div>
     <div style="display: inline-flex; border: black 1px solid; width: 250px; height: 200px; background: orange" class="form-group">
