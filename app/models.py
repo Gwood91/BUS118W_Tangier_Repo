@@ -18,10 +18,18 @@ from app import db, app
 def init_db():
     with app.app_context():
         db.create_all()
+# likes for status posts
 
-# The Post class are blog posts written by Users
+
+class Likes(db.Model):
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
 
+# The Post class are status posts written by Users
 class Post(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
@@ -31,6 +39,9 @@ class Post(db.Model):
     # user_id references an id value from the Users table, SQL-Alchemy automatically uses lower case characters for model names which is why user.id is a lower case u
     # This is going to be the ID of the user who authors the post**
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    likes = relationship("Likes")
+    poster_fname = db.Column(db.String(96))
+    poster_lname = db.Column(db.String(96))
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
@@ -66,17 +77,6 @@ class Recruiter_Project(db.Model):
     description = db.Column(db.String(256))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     candidates = relationship("Project_Candidate")
-
-    # def candidate_pool(self):
-        #candidate_pool = db.session.query(User_Profile).filter(Project_Candidate.project_id == self.id).all()
-        # return candidate_pool
-    # one to many relationship
-    # candidates = db.relationship('Project_Canidate', backref='author', lazy='dynamic')
-    # candidates = db.relationship('Project_Candidate', primaryjoin="Recruiter_Project.id==Project_Candidate.project_id", backref="Project_Candidate", lazy='dynamic')
-    # candidates = db.relationship('Project_Candidate', primaryjoin="Recruiter_Project.id==Project_Candidate.project_id", backref=db.backref("Project_Candidate", lazy='dynamic'))
-    # candidates = db.relationship('Project_Candidate', primaryjoin="Recruiter_Project.id==Project_Candidate.project_id",
-                                 # backref='Recruiter_Project', lazy='dynamic')
-    # determine if a given user is included within the talent pool
 
     def is_talent(self, user):
         return self.candidates.filter(
@@ -174,6 +174,22 @@ class User(db.Model):
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
+    def follow(self, user):
+        if not self.is_following(user):
+            self.followed.append(user)
+
+    def unfollow(self, user):
+        if self.is_following(user):
+            self.followed.remove(user)
+
+    def is_following(self, user):
+        return self.followed.filter(followers.c.followed_id == user.id).count() > 0
+
+    def followed_posts(self):
+        return Post.query.join(
+            followers, (followers.c.followed_id == Post.user_id)).filter(
+            followers.c.follower_id == self.id).order_by(
+            Post.timestamp.desc())
 
 
 # initialize the database

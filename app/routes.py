@@ -78,18 +78,31 @@ def before_request():
 # define the routes
 
 
-@app.route('/home', methods=['GET'])
+@app.route('/home', methods=['GET', 'Post'])
 def home():
+    if g.user is not None:
+        current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+    else:
+        current_user = None
     # fetch the headlines
     news_stories = fetch_headlines()
-    news_feed = ['post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post', 'post']
-    return render_template('home.html', title='Home', news_stories=news_stories, news_feed=news_feed)
+    if request.method == "GET":
+        return render_template('home.html', title='Home', news_stories=news_stories, current_user=current_user, db=db, User_Profile=User_Profile, str=str, len=len)
+    if request.method == 'POST':
+        status_body = str(request.form.get("statusBody", None))
+        # create new post object
+        status_post = Post(user_id=current_user.id, body=status_body, poster_fname=current_user.first_name, poster_lname=current_user.last_name)
+        """DETERMINE IF STATUS POST DOES NOT VIOLATE FILTERED WORDS USING NLP"""
+        # commit new user post to db
+        db.session.add(status_post)
+        db.session.commit()
+        return redirect(url_for('home'))
 
 
-@app.route('/home', methods=['Post'])
+@app.route('/home/login', methods=['GET'])
 @oidc.require_login
 def login_handler():
-    return render_template('home.html', title='Home')
+    return redirect(url_for('home'))
 
 
 @app.route('/logout', methods=['Post'])
@@ -219,7 +232,51 @@ def my_network():
     return render_template('myNetwork.html', title='myNetwork', query_listing=query_listing)
 
 
+@app.route('/user-profile/<username>', methods=['GET', 'POST'])
+@oidc.require_login
+def view_user(username):
+    current_user = db.session.query(User).filter_by(username=username).first()
+    title = current_user.first_name + " " + current_user.last_name
+    if request.method == 'GET':
+        return render_template('view_user_profile.html', title=title, current_user=current_user)
+    if request.method == 'POST':
+        return redirect(url_for('follow', username=current_user.username))
+
+
+@app.route('/follow/<username>')
+@oidc.require_login
+def follow(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('User {} not found.'.format(username))
+        return redirect(url_for('index'))
+    if user == current_user:
+        flash('You cannot follow yourself!')
+        return redirect(url_for('user', username=username))
+    current_user.follow(user)
+    db.session.commit()
+    flash('You are following {}!'.format(username))
+    return redirect(url_for('view_user', username=username))
+
+
+@app.route('/unfollow/<username>')
+@oidc.require_login
+def unfollow(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('User {} not found.'.format(username))
+        return redirect(url_for('index'))
+    if user == current_user:
+        flash('You cannot unfollow yourself!')
+        return redirect(url_for('user', username=username))
+    current_user.unfollow(user)
+    db.session.commit()
+    flash('You are not following {}.'.format(username))
+    return redirect(url_for('view_user', username=username))
+
 # for recruitment clients
+
+
 @app.route('/recruiter', methods=['GET', 'POST'])
 @oidc.require_login
 def recruiter_page():
