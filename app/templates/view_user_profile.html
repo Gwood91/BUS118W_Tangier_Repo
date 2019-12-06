@@ -24,7 +24,7 @@
         {% if client_user.is_following(current_user) == false  %}
             <input type="submit" value="Connect" class="btn btn-primary">
         {% else %}
-            <input type="submit" value="Disconnect" class="btn btn-primary">
+            <a href="{{ url_for('unfollow', username = current_user.username)}}"><input type="button" value="Disconnect" class="btn btn-primary"></a>
         {% endif %}
         <div style="display: block; border: 1px black solid">
             <h3>About:</h3>
