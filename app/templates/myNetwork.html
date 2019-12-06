@@ -12,52 +12,53 @@
       <i>Squeeze the most juice from your career!</i>
     </div>
   </div>
-<div>
-    <h2>My Network</h2>
-    <div class="form-group">
-        <divclass="form-group">
-            <div class="form-group">
-                <h3>Connections Query:</h3>
-                <form>
-                    Search:<input>
+
+
+
+    <div>
+    <h2>Network Search</h2>
+    <div style="width: 755px; height: 500px; border: solid black 1px">
+        <div style="display: inline-flex">
+            <div style="width: 50%; height: 500px; background: rgb(226, 226, 226)">
+                <h3>Find and Connect:</h3>
+                <form method="POST">
+                    <div style="text-align:center;">
+                        <table>
+                            <tbody>
+                                <tr><td><label for="search">Search:</label></td><td><input id="searchbar" name="search"></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <br>
                     <input type="submit" value="Search" style="float: right">
                 </form>
             </div>
-            <div class="form-group">
-                <div class="form-group">
-                    <h3 >Search Results:</h3>
+            <div style="width: 522; height: 250px;">
+                <div style="display: inline-block; width: 500px; height: 500px; background: rgb(231, 231, 231);">
+                    <h3 style="padding-right:auto; padding-left:auto;">Search Results:</h3>
                     <hr>
                     <div  class="form-group">
-                        {% for i in range(query_listing)%}
+                    {% if results_count != 0 %} 
+                        {% for user in query_users %}
                         <div>
                             <div class="form-group">
-                                <img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 50px; height: 50px;">
-                                <p style="text-align: center">Joe Blow "{{ i }}"</p>
+                                <img src="data:image/png;base64,{{user.profile.profile_picture}}" style="width: 50px; height: 50px; border-radius: 20%;">
+                                <p style="text-align: center">{{ user.first_name }} {{ user.last_name }}</p>
                             </div>
-                            <button style="float: right" >Send Invite</button>
-                            <button style="float: right">View Profile</button>
+                            <a href="{{ url_for('view_user', username = user.username)}}"><button style="float: right" class="btn btn-primary">View Profile</button></a>
                             <br>
                             <hr>
                         </div>
                         {% endfor %}
-                    </div>
-                </div>
-                <div style="background: orange" class="form-group">
-                    <h3>Suggested Connections:</h3>
-                    {% for i in range(query_listing)%}
-                    <div style="display:inline-block" class="form-group">
-                        <div style="display:block" class="form-group">
-                            <img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 50px; height: 50px;">
-                            <br>
-                            <p style="text-align: center">Joe Blow</p>
+                        {% else %}
+                        <div>
+                            <p>No Results to Display</p>
                         </div>
+                        {% endif %}
                     </div>
-                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
-    <div style="width: 700px; border: none">
-        <a href="/recruiter" style="float:right"><button>Return to Recruiter View</button></a>
-    </div>
+</div>
 </div>{% endblock %}

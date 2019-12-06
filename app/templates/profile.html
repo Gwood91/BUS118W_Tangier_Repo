@@ -36,11 +36,12 @@
     <hr>
     <div style="border: 1px black solid; display: block">
         <h3>Network:</h3>
-        {% for connection in range(connections)%}
+        {% for connection in current_user.followed %}
         <div style="display:inline-flex; margin-right: 50px">
-            <div><img src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png" style="width: 75px; height: 75px;">
+            <div>
+                <a href="{{ url_for('view_user', username = connection.username)}}"><img src="data:image/png;base64,{{connection.profile.profile_picture}}" style="width: 75px; height: 75px; border-radius: 20%;"></a>
                 <br>
-                <p style="text-align: center">Joe Blow</p>
+                <p style="text-align: center">{{connection.first_name}} {{connection.last_name}}</p>
             </div>
         </div>
         {% endfor %}

@@ -223,22 +223,36 @@ def job_apply(job_id):
     return redirect(url_for('jobs'))
 
 
-@app.route('/myNetwork')
+@app.route('/myNetwork', methods=['GET', 'POST'])
 @oidc.require_login
 def my_network():
-    # the query group returned resulting from the user search
-    """temporary variable condition"""
-    query_listing = 5
-    return render_template('myNetwork.html', title='myNetwork', query_listing=query_listing)
+    query_profiles = []
+    if request.method == 'GET':
+        return render_template('myNetwork.html', title='myNetwork', query_profiles=query_profiles)
+    if request.method == 'POST':
+        # the query group returned resulting from the user search
+        search = str(request.form.get("search", None))
+        search = "%{}%".format(search)
+        query_profiles = db.session.query(User_Profile).\
+            filter(or_(User_Profile.user_bio.contains(search), User_Profile.skills.contains(search), User_Profile.experience.contains(search))).all()
+        query_users = db.session.query(User).\
+            filter(or_(User.first_name.contains(search), User.last_name.contains(search))).all()
+        for profile in query_profiles:
+            user = db.session.query(User).filter_by(id=profile.user_id).first()
+            if user not in query_users:
+                query_users.append(user)
+        results_count = len(query_users)
+        return render_template('myNetwork.html', title='myNetwork', query_users=query_users, db=db, User=User, results_count=results_count)
 
 
 @app.route('/user-profile/<username>', methods=['GET', 'POST'])
 @oidc.require_login
 def view_user(username):
+    client_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
     current_user = db.session.query(User).filter_by(username=username).first()
     title = current_user.first_name + " " + current_user.last_name
     if request.method == 'GET':
-        return render_template('view_user_profile.html', title=title, current_user=current_user)
+        return render_template('view_user_profile.html', title=title, current_user=current_user, client_user=client_user)
     if request.method == 'POST':
         return redirect(url_for('follow', username=current_user.username))
 
@@ -246,6 +260,7 @@ def view_user(username):
 @app.route('/follow/<username>')
 @oidc.require_login
 def follow(username):
+    client_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('User {} not found.'.format(username))
@@ -253,7 +268,8 @@ def follow(username):
     if user == current_user:
         flash('You cannot follow yourself!')
         return redirect(url_for('user', username=username))
-    current_user.follow(user)
+    client_user.follow(user)
+    user.follow(client_user)
     db.session.commit()
     flash('You are following {}!'.format(username))
     return redirect(url_for('view_user', username=username))
@@ -262,6 +278,7 @@ def follow(username):
 @app.route('/unfollow/<username>')
 @oidc.require_login
 def unfollow(username):
+    client_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('User {} not found.'.format(username))
@@ -269,7 +286,8 @@ def unfollow(username):
     if user == current_user:
         flash('You cannot unfollow yourself!')
         return redirect(url_for('user', username=username))
-    current_user.unfollow(user)
+    client_user.unfollow(user)
+    user.unfollow(client_user)
     db.session.commit()
     flash('You are not following {}.'.format(username))
     return redirect(url_for('view_user', username=username))
