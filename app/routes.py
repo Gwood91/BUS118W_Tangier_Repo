@@ -31,7 +31,7 @@ import plotly.graph_objs as go
 import plotly
 import json
 from itertools import groupby
-from tangie import fetch_headlines, generate_dashboard_vis
+from tangie import fetch_headlines, generate_dashboard_vis, filter_content
 """TODO: Probably gonna need to change the double directory change here, need to consolidate"""
 # change the directory to current user
 current_user = user_root = os.path.expanduser('~')
@@ -90,9 +90,10 @@ def home():
         return render_template('home.html', title='Home', news_stories=news_stories, current_user=current_user, db=db, User=User, User_Profile=User_Profile, str=str, len=len, list=list)
     if request.method == 'POST':
         status_body = str(request.form.get("statusBody", None))
+        """filter status body for profanity using SVM"""
+        status_body = filter_content(status_body)
         # create new post object
         status_post = Post(user_id=current_user.id, body=status_body, poster_fname=current_user.first_name, poster_lname=current_user.last_name)
-        """DETERMINE IF STATUS POST DOES NOT VIOLATE FILTERED WORDS USING NLP"""
         # commit new user post to db
         db.session.add(status_post)
         db.session.commit()

@@ -9,6 +9,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 # function for gathering headlines
 from itertools import groupby
+from profanity_check import predict, predict_prob
 
 
 def fetch_headlines():
@@ -64,3 +65,15 @@ def generate_dashboard_vis(candidate_dataset, title):
         plt_base64 = "src=" + "data:image/png;base64,{}"
         plt_base64 = plt_base64.format(raw_base64[2:-1])  # format the base 64 string for html rendering
     return plt_base64
+
+
+def filter_content(content):
+    # split the content string for SVM prediction
+    content_split = content.split()
+    filtered_content = []
+    # add word to filtered content if not profane
+    for word in content_split:
+        x = predict([word])
+        if x[0] == 0:  # profane is "false"
+            filtered_post.append(word)
+    return filtered_content
