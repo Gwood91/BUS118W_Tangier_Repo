@@ -29,7 +29,7 @@
 <div style="border: black solid 1px; width: 1200px; height: 700px; display:inline-flex;" class="container">
   <div style="border: black solid 1px; width: 50%; height: 100%; background:orange">
     <h4>Newsfeed</h4>
-    <div style="position: static; margin-top: 25px; width: 500px; background:white">
+    <div style="position: static; margin-top: 25px; width: 500px; background:white; overflow:hidden">
       <div id="test" style="border: black 2px solid; width: 500px;  display: none;" class="container">
         <form method="post" name="statusUpdate" id="statusUpdate">
           What's New?
@@ -50,7 +50,7 @@
         <b>Please Login/Register to join the discussion!</b>
     </div>
     {% else %}
-    {% for post in current_user.followed_posts() and current_user.posts%}
+    {% for post in newsfeed%}
       <div>
           {% set pic = str(db.session.query(User_Profile.profile_picture).filter_by(user_id=post.user_id).first()) %}
           {% set user = db.session.query(User).filter_by(id=post.user_id).first() %}

@@ -86,8 +86,11 @@ def home():
         current_user = None
     # fetch the headlines
     news_stories = fetch_headlines()
+    newsfeed = list(current_user.followed_posts()) + list(current_user.posts)
+    # sort the newsfeed chronologically
+    newsfeed.sort(key=lambda post: post.timestamp, reverse=True)
     if request.method == "GET":
-        return render_template('home.html', title='Home', news_stories=news_stories, current_user=current_user, db=db, User=User, User_Profile=User_Profile, str=str, len=len, list=list)
+        return render_template('home.html', title='Home', news_stories=news_stories, current_user=current_user, db=db, newsfeed=newsfeed, User=User, User_Profile=User_Profile, str=str, len=len, list=list)
     if request.method == 'POST':
         status_body = str(request.form.get("statusBody", None))
         """filter status body for profanity using SVM"""
