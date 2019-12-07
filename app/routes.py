@@ -115,12 +115,17 @@ def logout_handler():
 @oidc.require_login
 def like(post_id):
     current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+    current_post = db.session.query(Likes).filter_by(post_id=post_id).first()
     liked_post = Likes(post_id=post_id, user_id=current_user.id)
     exists = db.session.query(Likes).filter_by(user_id=current_user.id, post_id=post_id).first()
     # determine if like exists already for current user and current post
     if exists is None:
         # create like object and cast to db
         db.session.add(liked_post)
+        db.session.commit()
+    if exists is not None:
+        # unlike status post
+        db.session.delete(current_post)
         db.session.commit()
     return redirect(url_for('home'))
 
