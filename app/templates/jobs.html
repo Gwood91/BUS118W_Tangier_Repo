@@ -3,7 +3,7 @@
 
 <div>
     <h2>Career Search</h2>
-    <div style="width: 755px; height: 500px; border: solid black 1px">
+    <div style="width: 755px; height: 500px; border: solid black 1px; background:orange">
         <div style="display: inline-flex">
             <div style="width: 50%; height: 500px; background: rgb(226, 226, 226)">
                 <h3>Find a Job:</h3>
@@ -27,7 +27,7 @@
                 <div style="display: inline-block; width: 475; height: 350px; background: rgb(231, 231, 231);">
                     <h3 style="padding-right:auto; padding-left:auto;">Listings:</h3>
                     <hr>
-                    <div style="display: inline-block; width: 475; height: 280px; background: rgb(231, 231, 231); overflow: scroll; overflow-x: hidden">
+                    <div style="display: inline-block; width: 475; height: 95%; background: rgb(231, 231, 231); overflow: scroll; overflow-x: hidden">
                         {% if len(jobs) > 0 %} 
                         {% for job in jobs%}
                         <div>
@@ -49,7 +49,5 @@
         </div>
     </div>
 </div>
-  <div style="display: inline-block; width: 475; height: 133px; background: orange">
-                </div>
 <br>
 <br> {% endblock %}

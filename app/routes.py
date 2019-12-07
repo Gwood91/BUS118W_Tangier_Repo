@@ -225,7 +225,7 @@ def jobs():
         city, state, job_title, keywords, skills = tuple(formatted_query)
         # execute client query
         jobs = db.session.query(Job_Post).\
-            filter(Job_Post.city.contains(city), Job_Post.state.contains(state), Job_Post.description.contains(skills)).all()
+            filter(Job_Post.city.contains(city), Job_Post.state.contains(state), Job_Post.description.contains(skills), Job_Post.title.contains(job_title), Job_Post.description.contains(keywords),).all()
         return render_template('jobs.html', title='Jobs', current_user=current_user, jobs=jobs, len=len)
 
 
