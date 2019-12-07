@@ -75,5 +75,7 @@ def filter_content(content):
     for word in content_split:
         x = predict([word])
         if x[0] == 0:  # profane is "false"
-            filtered_post.append(word)
-    return filtered_content
+            filtered_content.append(word)
+    s = " "
+    filtered_string = s.join(filtered_content)
+    return filtered_string
