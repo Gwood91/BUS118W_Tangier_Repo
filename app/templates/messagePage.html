@@ -49,7 +49,7 @@
 </div>
 <div style=" overflow:auto; direction: ltr; width: 50%; height: 100%; background:whitesmoke; float: left;" class="container">
     {% for message in user.messages_received%}
-      <p> From: {{ message.sender_fname }} {{ message.sender_lname }} {{ message.body }}</p>
+      <b> From: {{ message.sender_fname }} {{ message.sender_lname }}:</b><p> {{ message.body }}</p>
       <!-- <p>test test test test</p> -->
       <hr>
     {% endfor %}

@@ -53,13 +53,19 @@
     {% for post in current_user.followed_posts() and current_user.posts%}
       <div>
           {% set pic = str(db.session.query(User_Profile.profile_picture).filter_by(user_id=post.user_id).first()) %}
-          <img src="data:image/png;base64,{{pic[2:-3]}}" style="width:50px; height:50px;  border-radius: 20%;">
+          {% set user = db.session.query(User).filter_by(id=post.user_id).first() %}
+          <a href="{{ url_for('view_user', username=user.username )}}"><img src="data:image/png;base64,{{pic[2:-3]}}" style="width:50px; height:50px;  border-radius: 20%;"></a>
           <h5 style="display: inline">{{post.poster_fname}} {{post.poster_lname}}:</h5>
           <p>{{ post.body }}</p>
           <i>Posted: {{post.timestamp}}</i>
           <br>
-          <input class="btn btn-info" id="likeBtn" type="submit" value="Like">
-          <p>{{ len(post.likes)}} People Like this</p>
+          <a href="{{ url_for('like', post_id=post.id, user_id=user.id )}}"><input class="btn btn-info" id="likeBtn" type="submit" value="Like"></a>
+          {% if len(post.likes) == 1 %}
+            <p style="display:inline">{{ len(post.likes)}} Person Likes this</p>
+          {% else %}
+            <p style="display:inline">{{ len(post.likes)}} People Like this</p>
+          {% endif %}
+
           <hr>
       </div>
       {% endfor %}

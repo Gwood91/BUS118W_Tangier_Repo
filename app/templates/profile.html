@@ -23,7 +23,7 @@
     <form method="post" action="{{ url_for('profile') }}" method="post" enctype="multipart/form-data">
         <input name="save_img" type="submit" value="Save" class="btn btn-default" style="background-color: #63a0d4; color: white;">
         <input name="Upload_Image" type="file" style="padding: 0;" class="btn btn-default">
-        <div style="display: block; border: 1px black solid">
+        <div style="display: block; border: 1px black solid; width: 65%">
             <h3>About:</h3>
             <textarea style="width: 500px; height: 150px; resize: none" id="user_bio" name="user_bio" class="form-control">{{current_user.profile.user_bio}}</textarea>
             <h3>Experience:</h3>
@@ -34,7 +34,7 @@
         </div>
     </form>
     <hr>
-    <div style="border: 1px black solid; display: block">
+    <div style="border: 1px black solid; display: block; width: 65%; background:orange">
         <h3>Network:</h3>
         {% for connection in current_user.followed %}
         <div style="display:inline-flex; margin-right: 50px">

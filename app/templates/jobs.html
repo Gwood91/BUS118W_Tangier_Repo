@@ -11,11 +11,11 @@
                     <div style="text-align:center;">
                             <table>
                                     <tbody>
-                                        <tr><td><label for="name">City:</label></td><td><input id="name" type="name"></td></tr>
-                                        <tr><td><label for="state">State:</label></td><td><input id="state" type = "text"></td></tr>
-                                        <tr><td><label for="jobTitle">Title:</label></td><td><input id="jobTitle" type = "text"></td></tr>
-                                        <tr><td><label for="keywords">Keywords:</label></td><td><input id="keywords" type = "text"></td></tr>
-                                        <tr><td><label for="skills">Skills:</label></td><td><input id="skills" type = "text"></td></tr>
+                                        <tr><td><label for="city">City:</label></td><td><input id="city" name="city" type="text"></td></tr>
+                                        <tr><td><label for="state">State:</label></td><td><input id="state" name="state" type = "text"></td></tr>
+                                        <tr><td><label for="jobTitle">Title:</label></td><td><input id="jobTitle" name="jobTitle" type = "text"></td></tr>
+                                        <tr><td><label for="keywords">Keywords:</label></td><td><input id="keywords" name="keywords" type = "text"></td></tr>
+                                        <tr><td><label for="skills">Skills:</label></td><td><input id="skills" name="skills"  type = "text"></td></tr>
                                     </tbody>
                                 </table>
                     </div>
@@ -25,16 +25,16 @@
             </div>
             <div style="width: 500; height: 250px;">
                 <div style="display: inline-block; width: 475; height: 350px; background: rgb(231, 231, 231);">
-                    <h3 style="padding-right:auto; padding-left:auto;">Search Results:</h3>
+                    <h3 style="padding-right:auto; padding-left:auto;">Listings:</h3>
                     <hr>
                     <div style="display: inline-block; width: 475; height: 280px; background: rgb(231, 231, 231); overflow: scroll; overflow-x: hidden">
-                        {% if jobs is not none %} 
+                        {% if len(jobs) > 0 %} 
                         {% for job in jobs%}
                         <div>
                             <div style="display:block;">
-                                <h5 style="text-align: center">{{ job.title }}: {{ job.company }}</h5>
+                                <span style="width= 10px; overflow:hidden; white-space: nowrap; text-overflow: ellipsis;"><h5 style="text-align: center;">{{ job.title }}: {{ job.company }}</h5></spa
                             </div>
-                            <a href="{{ url_for("view_job", job_id=job.id) }}"><button style="float: right" class="btn btn-alert">View Job</button></a>
+                            <a href="{{ url_for("view_job", job_id=job.id) }}"><button style="float: right" class="btn btn-info">View Job</button></a>
                             <br>
                             <hr>
                         </div>
@@ -45,11 +45,11 @@
                         {% endif %}
                     </div>
                 </div>
-                <div style="display: inline-block; width: 475; height: 150px; background: orange">
-                </div>
             </div>
         </div>
     </div>
 </div>
+  <div style="display: inline-block; width: 475; height: 133px; background: orange">
+                </div>
 <br>
 <br> {% endblock %}

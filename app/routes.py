@@ -39,7 +39,7 @@ local_path = current_user + "/Documents/GitHub/BUS118W_Tangier_Repo/"
 sys.path.append(local_path)
 """an important distinction here is that we are importing the db module, not the db object created in __init__"""
 from app import app, db
-from models import User, User_Profile, Recruiter_Project, Message, Post, Project_Candidate, Job_Post, Job_Applicant
+from models import User, User_Profile, Recruiter_Project, Message, Post, Project_Candidate, Job_Post, Job_Applicant, Likes
 
 
 # note: the return variable cannot have the same name as the function that is returning it
@@ -87,7 +87,7 @@ def home():
     # fetch the headlines
     news_stories = fetch_headlines()
     if request.method == "GET":
-        return render_template('home.html', title='Home', news_stories=news_stories, current_user=current_user, db=db, User_Profile=User_Profile, str=str, len=len)
+        return render_template('home.html', title='Home', news_stories=news_stories, current_user=current_user, db=db, User=User, User_Profile=User_Profile, str=str, len=len, list=list)
     if request.method == 'POST':
         status_body = str(request.form.get("statusBody", None))
         # create new post object
@@ -108,6 +108,20 @@ def login_handler():
 @app.route('/logout', methods=['Post'])
 def logout_handler():
     oidc.logout()
+    return redirect(url_for('home'))
+
+
+@app.route('/feed/like/<post_id>', methods=['GET'])
+@oidc.require_login
+def like(post_id):
+    current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+    liked_post = Likes(post_id=post_id, user_id=current_user.id)
+    exists = db.session.query(Likes).filter_by(user_id=current_user.id, post_id=post_id).first()
+    # determine if like exists already for current user and current post
+    if exists is None:
+        # create like object and cast to db
+        db.session.add(liked_post)
+        db.session.commit()
     return redirect(url_for('home'))
 
 
@@ -186,15 +200,27 @@ def jobs():
     current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
     if request.method == 'GET':
         jobs = db.session.query(Job_Post).all()
-        return render_template('jobs.html', title='Jobs', current_user=current_user, jobs=jobs)
+        return render_template('jobs.html', title='Jobs', current_user=current_user, jobs=jobs, len=len)
     if request.method == 'POST':
         city = str(request.form.get("city", None))
         state = str(request.form.get("state", None))
         job_title = str(request.form.get("jobTitle", None))
         keywords = str(request.form.get("keywords", None))
         skills = str(request.form.get("skills", None))
-        jobs = db.session.query(Job_Post).filter_by(city=city).all()
-        return render_template('jobs.html', title='Jobs', current_user=current_user, jobs=jobs)
+        query = [city, state, job_title, keywords, skills]
+        formatted_query = []
+        # format each string for SQL like operation
+        for item in query:
+            if item is not None:
+                formatted_query.append(item)
+                item = (str("%{}%".format(item)))
+
+        # unpack the list
+        city, state, job_title, keywords, skills = tuple(formatted_query)
+        # execute client query
+        jobs = db.session.query(Job_Post).\
+            filter(Job_Post.city.contains(city), Job_Post.state.contains(state), Job_Post.description.contains(skills)).all()
+        return render_template('jobs.html', title='Jobs', current_user=current_user, jobs=jobs, len=len)
 
 
 @app.route('/jobs/view/<job_id>', methods=['GET', 'POST'])
