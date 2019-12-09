@@ -33,10 +33,10 @@
                     <input type="submit" value="Search" style="float: right">
                 </form>
             </div>
-            <div style="width: 522; height: 250px;">
-                <div style="display: inline-block; width: 500px; height: 500px; background: rgb(231, 231, 231);">
-                    <h3 style="padding-right:auto; padding-left:auto;">Search Results:</h3>
-                    <hr>
+            <div style="width: 522; height: 250px; background:rgb(231, 231, 231)">
+            <h3 style="padding-right:auto; padding-left:auto;">Search Results:</h3>
+
+                <div style="display: inline-block; width: 500px; height: 444px; background: rgb(231, 231, 231);overflow:auto; direction: ltr;">
                     <div  class="form-group">
                     {% if results_count != 0 %} 
                         {% for user in query_users %}
