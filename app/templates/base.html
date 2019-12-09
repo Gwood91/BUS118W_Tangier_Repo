@@ -26,7 +26,7 @@
       <li><a style="color: black;"href="/recruiter">Recruiter</a></li>
     </ul>
     {% if not g.user %}
-    <form class="navbar-form navbar-right" action="{{ url_for('login_handler') }}" method="get" enctype="multipart/form-data">
+    <form id="login" name="login-name" class="navbar-form navbar-right" action="{{ url_for('login_handler') }}" method="get" enctype="multipart/form-data">
       <div class="form-group">
         <p style="font-size:14px;color:black;display: inline-block;">Welcome</p>
         <button class="btn btn-default" name="login" type="submit" value="Log In/Register" >

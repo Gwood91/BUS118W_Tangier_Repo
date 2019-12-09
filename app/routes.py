@@ -82,13 +82,15 @@ def before_request():
 def home():
     if g.user is not None:
         current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
+        # fetch the headlines
+        news_stories = fetch_headlines()
+        newsfeed = list(current_user.followed_posts()) + list(current_user.posts)
+        # sort the newsfeed chronologically
+        newsfeed.sort(key=lambda post: post.timestamp, reverse=True)        
     else:
         current_user = None
-    # fetch the headlines
-    news_stories = fetch_headlines()
-    newsfeed = list(current_user.followed_posts()) + list(current_user.posts)
-    # sort the newsfeed chronologically
-    newsfeed.sort(key=lambda post: post.timestamp, reverse=True)
+        newsfeed = []
+        news_stories = []
     if request.method == "GET":
         return render_template('home.html', title='Home', news_stories=news_stories, current_user=current_user, db=db, newsfeed=newsfeed, User=User, User_Profile=User_Profile, str=str, len=len, list=list)
     if request.method == 'POST':
@@ -144,7 +146,6 @@ def profile():
         u = User_Profile(id=current_user.id, user_id=current_user.id, profile_picture="", user_bio="", skills="", experience="")
         db.session.add(u)
         db.session.commit()
-    profile = db.session.query(User_Profile).filter_by(id=current_user.id).first()
     if request.method == "GET":
         return render_template('profile.html', title='Profile', connections=5, current_user=current_user)
     # update profile page
@@ -154,11 +155,11 @@ def profile():
             skills = str(request.form.get("skills", None))
             experience = str(request.form.get("experience", None))
             # save get data and save changes to db
-            profile.user_bio = user_bio
-            profile.skills = skills
-            profile.experience = experience
+            current_user.profile.user_bio = user_bio
+            current_user.profile.skills = skills
+            current_user.profile.experience = experience
             db.session.commit()
-            return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture, current_user=current_user)
+            return render_template('profile.html', title='Profile', connections=5, profile=current_user.profile, current_user=current_user)
         elif 'save_img' in request.form:
             # gather the image from the file upload
             try:
@@ -166,14 +167,14 @@ def profile():
                 # convert uploaded image to base64 and strip the detritus
                 profile_img = str(base64.b64encode(image.read()))
                 profile_img = profile_img.split("'")[1]
-                # with open(profile_img, "rb") as image_file:
-                            # profile_img = base64.b64encode(image_file.read())
-                profile.profile_picture = profile_img
+                #with open(profile_img, "rb") as image_file:
+                            #profile_img = base64.b64encode(image_file.read())
+                current_user.profile.profile_picture = profile_img
                 db.session.commit()
                 print('image upload error', image)
             except:
                 print('no file chosen')
-        return render_template('profile.html', title='Profile', connections=5, profile=profile, profile_img=profile.profile_picture, current_user=current_user)
+        return redirect(url_for('profile'))
 
 
 @app.route('/messagePage', methods=['GET', 'POST'])
