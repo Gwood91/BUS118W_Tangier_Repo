@@ -460,7 +460,7 @@ def candidate_search():
     user_projects = db.session.query(Recruiter_Project).filter_by(user_id=current_user.id).all()
     results_len = len(query_results)
     if request.method == 'GET':
-        return render_template('recruiter_candidate_search.html', title='Candidate Search', results=query_results, results_len=results_len, i=5, current_user=current_user)
+        return render_template('recruiter_candidate_search.html', title='Candidate Search', results=query_results, results_len=results_len, i=5, current_user=current_user, len=len)
     # if the recruiter client is evaluating the potential match of a candidate
     if request.method == 'POST':
         # get the data supplied by the client and construct sanitzed queries in the db
@@ -485,9 +485,11 @@ def candidate_search():
             # fetch the user objects for profiles in search query
             if query_profiles is not None:
                 for profile in query_profiles:
-                    query_results.append(db.session.query(User).filter_by(id=profile.id).first())
+                    result = (db.session.query(User).filter_by(id=profile.id).first())
+                    if result is not None:
+                        query_results.append(result)
             results_len = len(query_results)
-        return render_template('recruiter_candidate_search.html', title='Candidate Search', results=query_results, results_len=results_len, current_user=current_user, i=i)
+        return render_template('recruiter_candidate_search.html', title='Candidate Search', results=query_results, results_len=results_len, current_user=current_user, i=i, len=len, User=User)
 
 
 @app.route('/view_candiate/<username>', methods=['GET', 'POST'])
