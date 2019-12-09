@@ -80,17 +80,16 @@ def before_request():
 
 @app.route('/home', methods=['GET', 'Post'])
 def home():
+    news_stories = fetch_headlines()
     if g.user is not None:
         current_user = db.session.query(User).filter_by(email=g.user.profile.email).first()
         # fetch the headlines
-        news_stories = fetch_headlines()
         newsfeed = list(current_user.followed_posts()) + list(current_user.posts)
         # sort the newsfeed chronologically
         newsfeed.sort(key=lambda post: post.timestamp, reverse=True)
     else:
         current_user = None
         newsfeed = []
-        news_stories = []
     if request.method == "GET":
         return render_template('home.html', title='Home', news_stories=news_stories, current_user=current_user, db=db, newsfeed=newsfeed, User=User, User_Profile=User_Profile, str=str, len=len, list=list)
     if request.method == 'POST':
