@@ -86,7 +86,7 @@ def home():
         news_stories = fetch_headlines()
         newsfeed = list(current_user.followed_posts()) + list(current_user.posts)
         # sort the newsfeed chronologically
-        newsfeed.sort(key=lambda post: post.timestamp, reverse=True)        
+        newsfeed.sort(key=lambda post: post.timestamp, reverse=True)
     else:
         current_user = None
         newsfeed = []
@@ -167,7 +167,7 @@ def profile():
                 # convert uploaded image to base64 and strip the detritus
                 profile_img = str(base64.b64encode(image.read()))
                 profile_img = profile_img.split("'")[1]
-                #with open(profile_img, "rb") as image_file:
+                # with open(profile_img, "rb") as image_file:
                             #profile_img = base64.b64encode(image_file.read())
                 current_user.profile.profile_picture = profile_img
                 db.session.commit()
